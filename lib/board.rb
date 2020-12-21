@@ -20,4 +20,8 @@ class Board
 
     create_squares(square_hash, num)
   end
+
+  def draw_board
+    'r'
+  end
 end
