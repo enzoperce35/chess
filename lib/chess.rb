@@ -1,8 +1,10 @@
+require_relative 'board.rb'
+
 class Chess
-  attr_accessor :player1
+  attr_accessor :board
 
   def initialize
-    @player1 = 'John'
+    @board = Board.new
   end
 
 end
