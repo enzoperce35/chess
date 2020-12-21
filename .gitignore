@@ -1,1 +1,4 @@
 spec/spec_helper.rb
+.rspec
+algorithm.txt
+testing.rb
