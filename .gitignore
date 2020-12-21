@@ -1,3 +1,1 @@
-algorithm.txt
-testing.rb
-.rspec
+spec/spec_helper.rb
