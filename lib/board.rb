@@ -1,27 +1,43 @@
 require_relative 'module.rb'
+require 'colorize'
 
 class Board
   attr_accessor :squares
   include ChessParts
 
   def initialize
-    @squares = create_squares
+    @squares = set_squares(Hash.new, BLACK_PIECES, WHITE_PIECES, 0)
   end
 
-  def create_squares(square_hash = {}, num = ('1'..'8').to_a, alpha = ('A'..'H').to_a)
-    return square_hash if num.length < 1
+  def set_squares(hash, black, white, count)
+    return hash if count == 64
 
-    number = num.pop
-    8.times do |i|
-      color = i.odd? ? BLACK : CYAN
-
-      square_hash.store("square#{alpha[i]}#{number}", color)
+    index1,index2 = count.divmod(8)
+    if count.between?(0,15)
+      put_piece(hash, black.shift, index1 + 1, index2)
+    elsif count.between?(48,63)
+      put_piece(hash, white.shift, index1 + 1, index2)
+    else
+      put_piece(hash, "    ", index1 + 1, index2)
     end
 
-    create_squares(square_hash, num)
+    set_squares(hash, black, white, count += 1)
   end
 
-  def draw_board
-    'r'
+  def put_piece(hash, square, index1, index2)
+    alphabet = ALPHA[index2]
+    numeric = (index1-9).abs
+
+    piece =
+      if numeric.odd?
+        index2.odd? ? square : square.colorize(background: :cyan)
+      else
+        index2.odd? ? square.colorize(background: :cyan) : square
+      end
+
+    hash.store("square#{alphabet}#{numeric}", piece)
   end
 end
+
+#x =  Board.new
+#x.create_squares
