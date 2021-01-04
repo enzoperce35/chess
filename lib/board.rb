@@ -6,7 +6,7 @@ class Board
   include ChessParts
 
   def initialize
-    @squares = set_squares(Hash.new, BLACK_PIECES, WHITE_PIECES, 0)
+    @squares = nil
   end
 
   def set_squares(hash, black, white, count)
@@ -38,6 +38,3 @@ class Board
     hash.store("square#{alphabet}#{numeric}", piece)
   end
 end
-
-#x =  Board.new
-#x.create_squares
