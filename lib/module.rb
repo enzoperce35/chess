@@ -1,8 +1,8 @@
-#require 'colorize'
 
 module ChessParts
-  WHITE = {bishop: " \u265D  ", knight: " \u265E  ", rook:" \u265C  ", king: " \u265A ", queen:" \u265B  ",  pawn: " \u265F  "}
-  BLACK = {bishop: " \u2657  ", knight: " \u2658  ", rook:" \u2656  ", king: " \u2654 ", queen:" \u2655  ",  pawn: " \u2659  "}
+  PIECE_SET = {bishop: " \u265D  ", knight: " \u265E  ", rook:" \u265C  ", king: " \u265A  ", queen:" \u265B  ",  pawn: " \u265F  "}
 
   ALPHA = ('A'..'H').to_a
+
+  X_COORDINATES = '   a    b   c   d   e   f   g   h'
 end

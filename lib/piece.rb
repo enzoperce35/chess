@@ -1,12 +1,12 @@
 require_relative 'module.rb'
 
 class Pieces
-  attr_accessor :white, :black
+  attr_accessor :turn_count, :default_set
   include ChessParts
 
-  def initialize
-    @white = create_pieces(WHITE)
-    @black = create_pieces(BLACK)
+  def initialize(turn_count)
+    @turn_count = turn_count
+    @default_set = create_pieces(PIECE_SET)
   end
 
   def create_pieces(pieces, set = Array.new)
@@ -35,6 +35,16 @@ class Pieces
       set.insert(x.zero? ? left : right, piece)
     end
   end
-end
 
-x = Pieces.new
+  def on_top
+    set = default_set.each_slice(8).to_a
+
+    set[0], set[1] = set[1], set[0]
+
+    set.flatten!
+  end
+
+  def on_bottom
+    default_set
+  end
+end
