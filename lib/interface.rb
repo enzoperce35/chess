@@ -6,12 +6,10 @@ class ConsoleInterface
     @output = output
   end
 
-  def prompt_name(player)
-    color = player == 1 ? 'white' : 'black'
-
+  def prompt_name(color)
     @output.puts "Who's Playing #{color}?"
 
-    #answer
+    answer
   end
 
   def answer
