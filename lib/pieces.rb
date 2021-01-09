@@ -1,16 +1,13 @@
 require_relative 'chess_parts.rb'
 
 class Pieces
-  attr_accessor :default_piece_set
   include ChessParts
 
-  def create_pieces(piece, set = Hash.new)
-    piece_set = piece == 'white' ? WHITE_PIECE_SET : BLACK_PIECE_SET
+  def create_pieces(set = Hash.new)
+    PIECE_SET.each do |piece,attr|
+      image, row, count, alpha = attr.values
 
-    piece_set.each do |key,val|
-      image, row, count, alpha = val.values
-
-      store_piece(key, image, row, count, alpha, set)
+      store_piece(piece, image, row, count, alpha, set)
     end
     set
   end
