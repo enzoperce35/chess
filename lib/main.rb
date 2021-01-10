@@ -1,7 +1,5 @@
 require_relative 'chess.rb'
 
-def start
-  game = Chess.new
-end
-
-start
+game = Chess.new
+#p game.player1, game.player2
+game.start

@@ -1,16 +1,13 @@
-require_relative 'piece.rb'
-require_relative 'module.rb'
+require_relative 'chess_parts.rb'
 require 'colorize'
 
-class Board < Pieces
-  attr_accessor :turn_count, :pieces, :top_pieces, :bottom_pieces
+class Board
+  attr_reader :squares
+
   include ChessParts
 
   def initialize
-    @turn_count = 0
-    @pieces = Pieces.new(turn_count)
-    @top_pieces = pieces.on_top
-    @bottom_pieces = pieces.on_bottom
+    @squares = create_squares
   end
 
   def create_squares(hash = {}, sqr_ind = 0)
@@ -23,35 +20,24 @@ class Board < Pieces
     create_squares(hash, sqr_ind += 1)
   end
 
-  def insert_to_hash(hash, square, ind1, ind2)
-    case square
-    when 0..15
-      put_piece(hash, top_pieces.shift.colorize(color: :black), ind1 + 1, ind2)
-    when 48..63
-      put_piece(hash, bottom_pieces.shift.colorize(color: :white), ind1 + 1, ind2)
-    else
-      put_piece(hash, "    ", ind1 + 1, ind2)
-    end
+  def insert_to_hash(hash, square, ind1, ind2, alphabet = ('a'..'h').to_a)
+    alpha = alphabet[ind2]
+    numeric = (ind1-8).abs
+
+    square = create_square(numeric, ind2)
+
+    hash.store("#{alpha}#{numeric}", square)
   end
 
-  def put_piece(hash, piece, index1, index2)
-    alphabet = ALPHA[index2]
-    numeric = (index1-9).abs
-
-    square = create_square(piece, numeric, index2)
-
-    hash.store("square#{alphabet}#{numeric}", square)
-  end
-
-  def create_square(piece, numeric, index2)
+  def create_square(numeric, index2)
      if numeric.odd?
-        index2.odd? ? piece.colorize(background: :light_black) : piece.colorize(background: :light_cyan)
+        index2.odd? ? "    ".colorize(background: :light_black) : "    ".colorize(background: :light_cyan)
      else
-        index2.odd? ? piece.colorize(background: :light_cyan) : piece.colorize(background: :light_black)
+        index2.odd? ? "    ".colorize(background: :light_cyan) : "    ".colorize(background: :light_black)
      end
   end
 
-  def draw_board(squares = create_squares, str = '')
+  def draw_board(str = '')
     squares.values.each_with_index do |sqr,ind|
       quotient, modulus = (ind + 1).divmod 8
 
@@ -77,6 +63,9 @@ class Board < Pieces
   end
 end
 
-x = Board.new
-x.draw_board
+#x = Board.new('iron', 'men')
 #x.draw_board
+#x.draw_board
+
+# "\e[0;39;106m    \e[0m"
+# "\e[0;39;106m ♚ \e[0m"

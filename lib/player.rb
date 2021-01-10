@@ -1,17 +1,16 @@
 require_relative 'pieces.rb'
+require_relative 'interface.rb'
 
 class Player < Pieces
-  attr_accessor :piece_color
+  attr_accessor :piece_color, :name, :active_pieces
+
+  include ConsoleInterface
 
   def initialize(piece_color)
     @piece_color = piece_color
-    @name = prompt_name
+    @name = '' #prompt_name
     @active_pieces = create_pieces
   end
 
-  def prompt_name
-    puts "Who's Playing #{piece_color}?"
 
-    gets.chomp!
-  end
 end
