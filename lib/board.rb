@@ -10,56 +10,57 @@ class Board
     @squares = create_squares
   end
 
-  def create_squares(hash = {}, sqr_ind = 0)
-    return hash if sqr_ind == 64
+  #create the default chess_board attributes in a hash
+  def create_squares(hash = {}, square = 0)
+    return hash if square == 64
 
-    index1,index2 = sqr_ind.divmod(8)
+    index1,index2 = square.divmod(8)
 
-    insert_to_hash(hash, sqr_ind, index1, index2)
+    insert_to_hash(hash, square, index1, index2, ('a'..'h').to_a)
 
-    create_squares(hash, sqr_ind += 1)
+    create_squares(hash, square += 1)
   end
 
-  def insert_to_hash(hash, square, ind1, row_index, alphabet = ('a'..'h').to_a)
-    x_coor = alphabet[row_index]
-    y_coor = (ind1-8).abs
+  def insert_to_hash(hash, square, index1, index2, alphabet)
+    row_index = index2 + 1 
 
-    square = square("    ", y_coor, row_index+1)
+    x_coor = alphabet[index2]
+    y_coor = (index1-8).abs
 
-    hash.store("#{x_coor}#{y_coor}", { 'square'=>square, 'col_ind'=>y_coor, 'row_ind'=>row_index+1 })
+    square = colorize_square("    ", y_coor, row_index)
+
+    hash.store("#{x_coor}#{y_coor}", { 'square'=>square, 'col_ind'=>y_coor, 'row_ind'=>row_index })
   end
 
-  def square(square, y_coor, x_coor)
-     if y_coor.odd?
-        x_coor.odd? ? square.colorize(background: :light_black) : square.colorize(background: :light_cyan)
-     else
-        x_coor.odd? ? square.colorize(background: :light_cyan) : square.colorize(background: :light_black)
-     end
+  def colorize_square(square, y_coor, x_coor)
+    if y_coor.odd?
+       x_coor.odd? ? square.colorize(background: :light_black) : square.colorize(background: :light_cyan)
+    else
+       x_coor.odd? ? square.colorize(background: :light_cyan) : square.colorize(background: :light_black)
+    end
   end
 
+  #draw the board with x and y coordinates
   def draw_board(squares, str = '')
-    squares.each_with_index do |square,ind|
+    squares.each do |square|
+      sqr_image = square['square']
+      row_index = square['row_ind']
+      col_index = square['col_ind']
 
-      quotient, modulus = (ind + 1).divmod 8
+      str += y_coordinate(col_index) if row_index == 1
 
-      str = add_y_coordinate(str, quotient) if start_of_a_row(ind)
+      str += sqr_image
 
-      str += square['square']
-
-      str += "\n" if end_of_a_row(modulus)
+      str += new_space if row_index == 8
     end
     puts str + X_COORDINATES.colorize(color: :red)
   end
 
-  def add_y_coordinate(string, numeric)
-    string += "#{8 - numeric} ".colorize(color: :red)
+  def y_coordinate(col_index)
+    "#{col_index} ".colorize(color: :red)
   end
 
-  def start_of_a_row(index)
-    index % 8 == 0
-  end
-
-  def end_of_a_row(mod)
-    mod.zero?
+  def new_space
+    "\n"
   end
 end

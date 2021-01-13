@@ -13,40 +13,45 @@ class Chess
     @player2 = Player.new('black')
     @board = Board.new
     @turn_count = 0
-
-    player1.name = 'John'  #not included
-    player2.name = 'Mark'  #not included
   end
 
-  def put_pieces(player)
-    player.active_pieces.values.each do |attribute|
-      active_piece = attribute['position']
-
-      square = @board.squares[active_piece]
-
-      x = square['row_ind']
-      y = square['col_ind']
-      image = player == opposing_player ? attribute['image'].colorize(color: :black) : attribute['image']
-
-      square['square'] = board.square(image, y, x)
-    end
-  end
-
-  def display_board
-    board.draw_board(board.squares.values)
-  end
-
+  #returns the player which will make a move
   def turn_player
     turn_count.odd? ? player2 : player1
   end
 
+  #returns the player which will make a move next
   def opposing_player
     turn_count.odd? ? player1 : player2
   end
 
-  def start
+  #place each players' active pieces to their corresponding square position
+  def place(player_pieces)
+    player_pieces.values.each do |piece|
+      image, position = piece.values
+
+      square = @board.squares[position]
+
+      square['square'] = board.colorize_square(image, square['col_ind'], square['row_ind'])
+    end
+  end
+
+  #displays the current state of the chess board
+  def display_board
+    board.draw_board(board.squares.values)
+  end
+
+  #asks for a piece to move
+  def ask_for_a_piece
     select_piece(turn_player.name)
-    2.times { |i| i.zero? ? put_pieces(opposing_player) : put_pieces(turn_player) }
+  end
+
+  #program controller
+  def start
+    ask_for_a_piece
+
+    2.times { |i| i.zero? ? place(opposing_player.active_pieces) : place(turn_player.active_pieces) }
+
     display_board
   end
 end
