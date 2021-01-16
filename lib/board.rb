@@ -2,15 +2,17 @@ require_relative 'chess_parts.rb'
 require 'colorize'
 
 class Board
-  attr_accessor :squares
+  attr_accessor :squares, :turn_player, :opposing_player
 
   include ChessParts
 
-  def initialize
+  def initialize(turn_player, opposing_player)
     @squares = create_squares
+    @turn_player = turn_player
+    @opposing_player = opposing_player
   end
 
-  #create the default chess_board attributes in a hash
+  #creates chess_board attributes in hash form
   def create_squares(hash = {}, square = 0)
     return hash if square == 64
 
@@ -22,7 +24,7 @@ class Board
   end
 
   def insert_to_hash(hash, square, index1, index2, alphabet)
-    row_index = index2 + 1 
+    row_index = index2 + 1
 
     x_coor = alphabet[index2]
     y_coor = (index1-8).abs
@@ -40,9 +42,41 @@ class Board
     end
   end
 
-  #draw the board with x and y coordinates
-  def draw_board(squares, str = '')
-    squares.each do |square|
+  #updates the chess board by placing each players' active pieces
+  def update_board
+    2.times do |i|
+      if i.zero?
+        place(opposing_player.active_pieces)
+      else
+        place(turn_player.active_pieces)
+      end
+    end
+  end
+
+  def place(player_pieces)
+    player_pieces.values.each do |piece|
+      image, position = piece.values
+
+      square = @squares[position]
+
+      square['square'] = colorize_square(image, square['col_ind'], square['row_ind'])
+    end
+  end
+
+  #displays the board with a message by converting hash into a string
+  def draw_board_with_message(squares_hash, message)
+    board_string = convert_to_string(squares_hash)
+
+    message.each do |line|
+      index = board_string.index(" \n")
+      board_string = board_string.insert(index+1, line)
+    end
+
+    puts board_string
+  end
+
+  def convert_to_string(squares, str = '')
+    squares.values.each do |square|
       sqr_image = square['square']
       row_index = square['row_ind']
       col_index = square['col_ind']
@@ -53,7 +87,7 @@ class Board
 
       str += new_space if row_index == 8
     end
-    puts str + X_COORDINATES.colorize(color: :red)
+    str + X_COORDINATES.colorize(color: :red)
   end
 
   def y_coordinate(col_index)
@@ -61,6 +95,6 @@ class Board
   end
 
   def new_space
-    "\n"
+    " \n"
   end
 end
