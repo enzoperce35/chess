@@ -87,7 +87,7 @@ class Board
 
       str += new_space if row_index == 8
     end
-    str + X_COORDINATES.colorize(color: :red)
+    ("\n"*2) + str + X_COORDINATES.colorize(color: :red) + ("\n"*2)
   end
 
   def y_coordinate(col_index)
