@@ -8,15 +8,13 @@ module ConsoleInterface
   end
 
   #ask and the player's piece of choice
-  def select_piece_interface(player, string)   #working, but needs cleaning
-    pieces = string.join.scan(/(\w\. \w+ \w\d)/)
+  def select_piece_interface(player, string)
+    pieces = string.join.scan(/(\w\d)/)
 
-    string = string.join.scan(/(\w\.)/).map { |x| x[0].tr('.', '') }.sort { |a,b| a <=> b }
+    puts "#{player}'s turn, please select your chess piece. e.g. 'e1'"
 
-    puts "#{player}'s turn, please select your chess piece"
+    ans = gets.chomp! until pieces.include?([ans])
 
-    piece = gets.chomp! until string.include?(piece)
-
-    pieces.each { |x| return x[0].scan(/\w\d/).join if x[0].include?(piece + '. ') }
+    ans
   end
 end
