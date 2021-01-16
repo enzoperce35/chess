@@ -1,6 +1,6 @@
 module SideMessage
 
-  def create_active_pieces_side_message(player)
+  def active_pieces_side_message(player)
     piece_color = player.piece_color
     active_pieces = player.active_pieces
 
