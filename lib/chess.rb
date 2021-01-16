@@ -1,18 +1,22 @@
 require_relative 'player.rb'
 require_relative 'board.rb'
+require_relative 'side_message.rb'
 require 'colorize'
 
 class Chess
-  attr_accessor :player1, :player2, :turn_count, :board
+  attr_accessor :turn_count, :player1, :player2, :board
 
-  include ChessParts
   include ConsoleInterface
+  include SideMessage
 
   def initialize
+    @turn_count = 0
     @player1 = Player.new('white')
     @player2 = Player.new('black')
-    @board = Board.new
-    @turn_count = 0
+    @board = Board.new(turn_player, opposing_player)
+
+    player1.name = 'John'  #not included
+    player2.name = 'Mark'  #not included
   end
 
   #returns the player which will make a move
@@ -25,33 +29,19 @@ class Chess
     turn_count.odd? ? player1 : player2
   end
 
-  #place each players' active pieces to their corresponding square position
-  def place(player_pieces)
-    player_pieces.values.each do |piece|
-      image, position = piece.values
-
-      square = @board.squares[position]
-
-      square['square'] = board.colorize_square(image, square['col_ind'], square['row_ind'])
-    end
-  end
-
-  #displays the current state of the chess board
-  def display_board
-    board.draw_board(board.squares.values)
-  end
-
-  #asks for a piece to move
+  #display current board with side message and prompt turn_player for a piece to move
   def ask_for_a_piece
+    message = create_active_pieces_side_message(turn_player)
+
+    board.draw_board_with_message(board.squares, message)
+
     select_piece(turn_player.name)
   end
 
   #program controller
   def start
+    board.update_board
+
     ask_for_a_piece
-
-    2.times { |i| i.zero? ? place(opposing_player.active_pieces) : place(turn_player.active_pieces) }
-
-    display_board
   end
 end
