@@ -4,7 +4,7 @@ require 'colorize'
 class Pieces
   include ChessParts
 
-  #create each players' chess pieces with their attributes in a hash
+  #create each players' chess pieces('color one with black') with their attributes in a hash
   def create_pieces(piece_color, set = Hash.new)
     PIECE_SET.each do |piece,attr|
       image, row, count, alpha = attr.values
@@ -19,8 +19,8 @@ class Pieces
     set
   end
 
-  def store_piece(piece, image, row, iteration, alpha, set)
-    iteration.times do |i|
+  def store_piece(piece, image, row, count, alpha, set)
+    count.times do |i|
       position = alpha[i]
 
       set["#{piece}#{i+1}"] = { 'image'=>image, 'position'=>"#{position}#{row}", 'moves'=>[] }
