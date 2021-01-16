@@ -31,11 +31,11 @@ class Chess
 
   #display current board with side message and prompt turn_player for a piece to move
   def ask_for_a_piece
-    message = create_active_pieces_side_message(turn_player)
+    message = active_pieces_side_message(turn_player)
 
     board.draw_board_with_message(board.squares, message)
 
-    select_piece(turn_player.name)
+    select_piece_interface(turn_player.name, message)
   end
 
   #program controller
