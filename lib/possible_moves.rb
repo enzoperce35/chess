@@ -12,15 +12,16 @@ class PossibleMoves
 
     @piece_name = piece['name']
     @piece_position = piece['position']
-    @current_square = squares[piece['position']]
     @opposing_player_pieces = board.opposing_player.active_pieces.values
 
     @array = []
 
-    @new_square_position = current_square
+    @current_square = squares[piece_position]
+
+
     @next_square = piece_position
-    @row_index = new_square_position['row_ind'] - 1
-    @column_index = new_square_position['col_ind']
+    @row_index = current_square['row_ind'] - 1
+    @column_index = current_square['col_ind']
   end
 
   def possible_moves
@@ -41,8 +42,8 @@ class PossibleMoves
   end
 
   def generate_possible_queen_moves
-    move_up(1, true) until square_is_occupied? || piece_is_on_upper_border?
-    #continue here, needed to add reset_values somewhere here
+    move_up(1, true)
+
     array
   end
 
@@ -55,10 +56,9 @@ class PossibleMoves
   end
 
   def reset_values
-    @new_square_position = current_square
     @next_square = piece_position
-    @row_index = new_square_position['row_ind'] - 1
-    @column_index = new_square_position['col_ind']
+    @row_index = current_square['row_ind'] - 1
+    @column_index = current_square['col_ind']
   end
 
   def move_up(step = 1, multiple_moves = false)
@@ -66,7 +66,9 @@ class PossibleMoves
 
     log_next_square
 
-    multiple_moves == true ? @new_square_position = squares[next_square] : reset_values
+    return nil if square_is_occupied? || piece_is_on_upper_border?
+
+    multiple_moves == true ? move_up(step, multiple_moves) : reset_values
   end
 
   #pushes next_square if it is empty or with an opponent's piece to an array of possible moves
@@ -109,18 +111,18 @@ class PossibleMoves
   end
 
   def piece_is_on_upper_border?
-    new_square_position['col_ind'] == 8
+    squares[next_square]['col_ind'] == 8
   end
 
   def piece_is_on_lower_border?
-    current_piece_square['col_ind'] == 1
+    squares[next_square]['col_ind'] == 1
   end
 
   def piece_is_on_right_border?
-    current_piece_square['row_ind'] == 8
+    squares[next_square]['row_ind'] == 8
   end
 
   def piece_is_on_left_border?
-    current_piece_square['row_ind'] == 1
+    squares[next_square]['row_ind'] == 1
   end
 end
