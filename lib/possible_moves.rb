@@ -1,35 +1,71 @@
 require_relative 'helper.rb'
 
 class PossibleMoves
-  attr_accessor :array, :squares, :piece, :piece_name, :piece_position, :current_square, :new_square_position, :row_index, :column_index,
-                :opposing_player_pieces, :next_square
+  attr_accessor :piece, :board, :new_square, :possible_moves
 
   include Helper
 
   def initialize(piece, board)
     @piece = piece
-    @squares = board.squares
-
-    @piece_name = piece['name']
-    @piece_position = piece['position']
-    @opposing_player_pieces = board.opposing_player.active_pieces.values
-
-    @array = []
-
-    @current_square = squares[piece_position]
-
-
-    @next_square = piece_position
-    @row_index = current_square['row_ind'] - 1
-    @column_index = current_square['col_ind']
+    @board = board
+    @new_square = nil
+    @possible_moves = []
   end
 
-  def possible_moves
+  #determines if the piece has been moved from it's original position
+  def piece_is_moved?
+    piece['moved?']
+  end
+
+  #returns an array of opposing player's piece positions
+  def get_opposing_pieces(arr = [])
+    board.opposing_player.active_pieces.each_value do |val|
+      arr << val['position']
+    end
+    arr
+  end
+
+  #get the row index and column index of the chess piece inside the chess board
+  def get_row_index
+    piece_position = piece['position']
+
+    square = board.squares[piece_position]
+
+    square['row_ind'] - 1
+  end
+
+  def get_col_index
+    piece_position = piece['position']
+
+    square = board.squares[piece_position]
+
+    square['col_ind']
+  end
+
+  #determines if the piece is on chess borders during traversal
+  def piece_is_on_upper_border?
+    board.squares[new_square]['col_ind'] == 8
+  end
+
+  def piece_is_on_lower_border?
+    squares[new_square]['col_ind'] == 1
+  end
+
+  def piece_is_on_right_border?
+    squares[new_square]['row_ind'] == 8
+  end
+
+  def piece_is_on_left_border?
+    squares[new_square]['row_ind'] == 1
+  end
+
+  #generate all possible moves the piece can make and put it into an '@possible_moves' array
+  def generate_possible_moves(piece_name = piece['name'])
     case piece_name
     when 'king'
       king_moves
     when 'queen'
-      generate_possible_queen_moves
+      generate_queen_moves
     when 'rook'
       rook_moves
     when 'bishop'
@@ -37,92 +73,67 @@ class PossibleMoves
     when 'knight'
       knight_moves
     when 'pawn'
-      generate_possible_pawn_moves
+      generate_pawn_moves
     end
   end
 
-  def generate_possible_queen_moves
-    move_up(1, true)
+  def generate_queen_moves
+    traverse_up(true)
 
-    array
+    possible_moves
   end
 
-  def generate_possible_pawn_moves
-    move_up
+  def generate_pawn_moves
+    traverse_up
 
-    move_up(2) unless piece_is_moved?
+    traverse_up(false, 2) unless piece_is_moved?
 
-    array
+    possible_moves
   end
 
-  def reset_values
-    @next_square = piece_position
-    @row_index = current_square['row_ind'] - 1
-    @column_index = current_square['col_ind']
-  end
+  #traverse board squares upward, assign into '@new_square' until square is occupied or in chess border
+  def traverse_up(multiple_moves = false, step = 1, row_index = get_row_index, column_index = get_col_index)
+    @new_square = convert_to_board_position(row_index, column_index += step)
 
-  def move_up(step = 1, multiple_moves = false)
-    @next_square = convert_to_board_position(@row_index, @column_index += step)
-
-    log_next_square
+    log_new_square
 
     return nil if square_is_occupied? || piece_is_on_upper_border?
 
-    multiple_moves == true ? move_up(step, multiple_moves) : reset_values
+    traverse_up(multiple_moves, step, row_index, column_index) if multiple_moves == true
   end
 
-  #pushes next_square if it is empty or with an opponent's piece to an array of possible moves
-  def log_next_square
-    log_opponent_square if square_is_opponent_occupied?
-
+  #push '@new_square' to '@possible_moves' array square is empty or with an opponent's piece
+  def log_new_square
     log_square unless square_is_occupied?
-  end
 
-  def log_opponent_square
-    opposing_player_pieces.each do |piece|
-      opposing_piece = piece['position'] + "(capture opposing #{piece['name']})"
-
-      @array << opposing_piece if piece['position'] == next_square
-    end
-  end
-
-  def square_is_opponent_occupied?
-    opposing_player_pieces.each { |piece| return true if piece['position'] == next_square }
+    log_opponent_square if square_is_opponent_occupied?
   end
 
   def log_square
-    @array << next_square
+    @possible_moves << new_square
   end
 
   def square_is_occupied?
-    return false if next_square == piece_position
-    square = squares[next_square]
+    return false if new_square == piece['position']
+
+    square = board.squares[new_square]
 
     !square['square'].include?('    ')
   end
 
+  def log_opponent_square
+    opponent_pieces = board.opposing_player.active_pieces
 
+    opponent_pieces.each_value do |opponent|
+      log_phrase = opponent['position'] + "(capture opposing #{opponent['name']})"
 
-
-
-
-  def piece_is_moved?
-    piece['moved']
+      @possible_moves << log_phrase if opponent['position'] == new_square
+    end
   end
 
-  def piece_is_on_upper_border?
-    squares[next_square]['col_ind'] == 8
-  end
+  def square_is_opponent_occupied?
+    opposing_pieces = get_opposing_pieces
 
-  def piece_is_on_lower_border?
-    squares[next_square]['col_ind'] == 1
-  end
-
-  def piece_is_on_right_border?
-    squares[next_square]['row_ind'] == 8
-  end
-
-  def piece_is_on_left_border?
-    squares[next_square]['row_ind'] == 1
+    opposing_pieces.each.include?(new_square)
   end
 end
