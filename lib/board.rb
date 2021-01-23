@@ -54,8 +54,8 @@ class Board
   end
 
   def place(player_pieces)
-    player_pieces.values.each do |piece|
-      image, position = piece.values
+    player_pieces.values.each do |player_piece|
+      piece, image, position = player_piece.values
 
       square = @squares[position]
 
