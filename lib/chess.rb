@@ -1,5 +1,6 @@
 require_relative 'player.rb'
 require_relative 'board.rb'
+require_relative 'possible_moves.rb'
 require_relative 'side_message.rb'
 require 'colorize'
 
@@ -29,6 +30,18 @@ class Chess
     turn_count.odd? ? player1 : player2
   end
 
+  def make_move(piece = nil)
+    chosen_piece = ask_for_a_piece
+
+    turn_player.active_pieces.each { |key,val| piece = key if val.values.include?(chosen_piece) }
+
+    chosen_piece = turn_player.active_pieces[piece]
+
+    new_move = PossibleMoves.new(chosen_piece, board)
+
+    new_move.generate_possible_moves
+  end
+
   #display current board with side message and prompt turn_player for a piece to move
   def ask_for_a_piece
     message = active_pieces_side_message(turn_player)
@@ -42,6 +55,6 @@ class Chess
   def start
     board.update_board
 
-    ask_for_a_piece
+    make_move
   end
 end
