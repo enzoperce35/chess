@@ -48,15 +48,15 @@ class PossibleMoves
   end
 
   def piece_is_on_lower_border?
-    squares[new_square]['col_ind'] == 1
+    board.squares[new_square]['col_ind'] == 1
   end
 
   def piece_is_on_right_border?
-    squares[new_square]['row_ind'] == 8
+    board.squares[new_square]['row_ind'] == 8
   end
 
   def piece_is_on_left_border?
-    squares[new_square]['row_ind'] == 1
+    board.squares[new_square]['row_ind'] == 1
   end
 
   #generate all possible moves the piece can make and put it into an '@possible_moves' array
@@ -80,6 +80,12 @@ class PossibleMoves
   def generate_queen_moves
     traverse_up(true)
 
+    traverse_down(true)
+
+    traverse_right(true)
+
+    traverse_left(true)
+
     possible_moves
   end
 
@@ -100,6 +106,39 @@ class PossibleMoves
     return nil if square_is_occupied? || piece_is_on_upper_border?
 
     traverse_up(multiple_moves, step, row_index, column_index) if multiple_moves == true
+  end
+
+  #traverse board squares downward, assign into '@new_square' until square is occupied or in chess border
+  def traverse_down(multiple_moves = false, step = 1, row_index = get_row_index, column_index = get_col_index)
+    @new_square = convert_to_board_position(row_index, column_index -= step)
+
+    log_new_square
+
+    return nil if square_is_occupied? || piece_is_on_lower_border?
+
+    traverse_down(multiple_moves, step, row_index, column_index) if multiple_moves == true
+  end
+
+  #traverse board squares rightward, assign into '@new_square' until square is occupied or in chess border
+  def traverse_right(multiple_moves = false, step = 1, row_index = get_row_index, column_index = get_col_index)
+    @new_square = convert_to_board_position(row_index += 1, column_index)
+
+    log_new_square
+
+    return nil if square_is_occupied? || piece_is_on_right_border?
+
+    traverse_right(multiple_moves, step, row_index, column_index) if multiple_moves == true
+  end
+
+  #traverse board squares leftward, assign into '@new_square' until square is occupied or in chess border
+  def traverse_left(multiple_moves = false, step = 1, row_index = get_row_index, column_index = get_col_index)
+    @new_square = convert_to_board_position(row_index -= 1, column_index)
+
+    log_new_square
+
+    return nil if square_is_occupied? || piece_is_on_left_border?
+
+    traverse_left(multiple_moves, step, row_index, column_index) if multiple_moves == true
   end
 
   #push '@new_square' to '@possible_moves' array square is empty or with an opponent's piece
