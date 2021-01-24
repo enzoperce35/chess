@@ -42,7 +42,50 @@ class PossibleMoves
     square['col_ind']
   end
 
-  #determines if the piece is on chess borders during traversal
+  #modifies the values of row_index and column_index depending on the traversal direction of the piece
+  def alter_coordinates(direction, row_index, column_index)
+    case direction
+    when 'up'
+      [row_index, column_index += 1]
+    when 'down'
+      [row_index, column_index -= 1]
+    when 'left'
+      [row_index -= 1, column_index]
+    when 'right'
+      [row_index += 1, column_index]
+    when 'up-right'
+      [row_index += 1, column_index += 1]
+    when 'up-left'
+      [row_index -= 1, column_index += 1]
+    when 'down-right'
+      [row_index += 1, column_index -= 1]
+    when 'down-left'
+      [row_index -= 1, column_index -= 1]
+    end
+  end
+
+  #determines if the traversal cannot continue because piece is on chess borders
+  def unable_to_continue?(direction)
+    case direction
+    when 'up',
+      piece_is_on_upper_border?
+    when 'down'
+      piece_is_on_lower_border?
+    when 'left'
+      piece_is_on_left_border?
+    when 'right'
+      piece_is_on_right_border?
+    when 'up-right'
+      piece_is_on_upper_border? || piece_is_on_right_border?
+    when 'up-left'
+      piece_is_on_upper_border? || piece_is_on_left_border?
+    when 'down-right'
+      piece_is_on_lower_border? || piece_is_on_right_border?
+    when 'down-left'
+      piece_is_on_lower_border? || piece_is_on_left_border?
+    end
+  end
+
   def piece_is_on_upper_border?
     board.squares[new_square]['col_ind'] == 8
   end
@@ -63,82 +106,52 @@ class PossibleMoves
   def generate_possible_moves(piece_name = piece['name'])
     case piece_name
     when 'king'
-      king_moves
+      generate_king_moves
     when 'queen'
       generate_queen_moves
     when 'rook'
-      rook_moves
+      generate_rook_moves
     when 'bishop'
-      bishop_moves
+      generate_bishop_moves
     when 'knight'
-      knight_moves
+      generate_knight_moves
     when 'pawn'
       generate_pawn_moves
     end
   end
 
   def generate_queen_moves
-    traverse_up(true)
+    traverse 'up'
 
-    traverse_down(true)
+    traverse 'down'
 
-    traverse_right(true)
+    traverse 'left'
 
-    traverse_left(true)
+    traverse 'right'
+
+    traverse 'up-right'
+
+    traverse 'up-left'
+
+    traverse 'down-right'
+
+    traverse 'down-left'
 
     possible_moves
   end
 
-  def generate_pawn_moves
-    traverse_up
+  def traverse(direction, row_index = get_row_index, column_index = get_col_index)
+    coordinates = alter_coordinates(direction, row_index, column_index)
 
-    traverse_up(false, 2) unless piece_is_moved?
+    row_index, column_index = coordinates
 
-    possible_moves
-  end
-
-  #traverse board squares upward, assign into '@new_square' until square is occupied or in chess border
-  def traverse_up(multiple_moves = false, step = 1, row_index = get_row_index, column_index = get_col_index)
-    @new_square = convert_to_board_position(row_index, column_index += step)
+    @new_square = convert_to_board_position(row_index, column_index)
 
     log_new_square
 
-    return nil if square_is_occupied? || piece_is_on_upper_border?
+    return nil if square_is_occupied? || unable_to_continue?(direction)
 
-    traverse_up(multiple_moves, step, row_index, column_index) if multiple_moves == true
-  end
-
-  #traverse board squares downward, assign into '@new_square' until square is occupied or in chess border
-  def traverse_down(multiple_moves = false, step = 1, row_index = get_row_index, column_index = get_col_index)
-    @new_square = convert_to_board_position(row_index, column_index -= step)
-
-    log_new_square
-
-    return nil if square_is_occupied? || piece_is_on_lower_border?
-
-    traverse_down(multiple_moves, step, row_index, column_index) if multiple_moves == true
-  end
-
-  #traverse board squares rightward, assign into '@new_square' until square is occupied or in chess border
-  def traverse_right(multiple_moves = false, step = 1, row_index = get_row_index, column_index = get_col_index)
-    @new_square = convert_to_board_position(row_index += 1, column_index)
-
-    log_new_square
-
-    return nil if square_is_occupied? || piece_is_on_right_border?
-
-    traverse_right(multiple_moves, step, row_index, column_index) if multiple_moves == true
-  end
-
-  #traverse board squares leftward, assign into '@new_square' until square is occupied or in chess border
-  def traverse_left(multiple_moves = false, step = 1, row_index = get_row_index, column_index = get_col_index)
-    @new_square = convert_to_board_position(row_index -= 1, column_index)
-
-    log_new_square
-
-    return nil if square_is_occupied? || piece_is_on_left_border?
-
-    traverse_left(multiple_moves, step, row_index, column_index) if multiple_moves == true
+    traverse(direction, row_index, column_index)
   end
 
   #push '@new_square' to '@possible_moves' array square is empty or with an opponent's piece
