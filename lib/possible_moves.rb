@@ -120,6 +120,26 @@ class PossibleMoves
     end
   end
 
+  def generate_king_moves
+    traverse('up', true)
+
+    traverse('down', true)
+
+    traverse('left', true)
+
+    traverse('right', true)
+
+    traverse('up-right', true)
+
+    traverse('up-left', true)
+
+    traverse('down-right', true)
+
+    traverse('down-left', true)
+
+    possible_moves
+  end
+
   def generate_queen_moves
     traverse 'up'
 
@@ -140,18 +160,26 @@ class PossibleMoves
     possible_moves
   end
 
-  def traverse(direction, row_index = get_row_index, column_index = get_col_index)
+  def traverse(direction, single_move = false, row_index = get_row_index, column_index = get_col_index)
     coordinates = alter_coordinates(direction, row_index, column_index)
 
     row_index, column_index = coordinates
 
-    @new_square = convert_to_board_position(row_index, column_index)
+    return nil if over_the_border?(coordinates)
+
+    @new_square = convert_to_board_position(coordinates)
 
     log_new_square
 
-    return nil if square_is_occupied? || unable_to_continue?(direction)
+    return nil if square_is_occupied? || unable_to_continue?(direction) || single_move
 
-    traverse(direction, row_index, column_index)
+    traverse(direction, single_move, row_index, column_index)
+  end
+
+  def over_the_border?(coordinates)
+    row_index, column_index = coordinates
+
+    !row_index.between?(0,7) || !column_index.between?(1,8)
   end
 
   #push '@new_square' to '@possible_moves' array square is empty or with an opponent's piece
