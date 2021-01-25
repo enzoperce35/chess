@@ -123,65 +123,29 @@ class PossibleMoves
   end
 
   def generate_king_moves
-    traverse('up', true)
+    traverse_cardinal_directions(false)
 
-    traverse('down', true)
-
-    traverse('left', true)
-
-    traverse('right', true)
-
-    traverse('up-right', true)
-
-    traverse('up-left', true)
-
-    traverse('down-right', true)
-
-    traverse('down-left', true)
+    traverse_intercardinal_directions(false)
 
     possible_moves
   end
 
   def generate_queen_moves
-    traverse 'up'
+    traverse_cardinal_directions
 
-    traverse 'down'
-
-    traverse 'left'
-
-    traverse 'right'
-
-    traverse 'up-right'
-
-    traverse 'up-left'
-
-    traverse 'down-right'
-
-    traverse 'down-left'
+    traverse_intercardinal_directions
 
     possible_moves
   end
 
   def generate_rook_moves
-    traverse 'up'
-
-    traverse 'down'
-
-    traverse 'left'
-
-    traverse 'right'
+    traverse_cardinal_directions
 
     possible_moves
   end
 
   def generate_bishop_moves
-    traverse 'up-right'
-
-    traverse 'up-left'
-
-    traverse 'down-right'
-
-    traverse 'down-left'
+    traverse_intercardinal_directions
 
     possible_moves
   end
@@ -220,23 +184,35 @@ class PossibleMoves
   end
 
   def generate_pawn_moves
-    traverse('up', true)
+    traverse('up', false)
 
-    traverse('double_up', true) unless piece_is_moved?
+    traverse('double_up', false) unless piece_is_moved?
 
     possible_moves
   end
 
-  def traverse(direction, single_move = false, row_index = get_row_index, column_index = get_col_index)
+  def traverse(direction, single_move = true, row_index = get_row_index, column_index = get_col_index)
     coordinates = alter_coordinates(direction, row_index, column_index)
 
     row_index, column_index = coordinates
 
     log_coordinates(coordinates)
 
-    return nil if square_is_occupied? || unable_to_continue?(direction) || single_move
+    return nil if square_is_occupied? || unable_to_continue?(direction) || !single_move
 
     traverse(direction, single_move, row_index, column_index)
+  end
+
+  def traverse_cardinal_directions(repeat = true)
+    card_dir = ['up', 'down', 'left', 'right']
+
+    4.times { traverse(card_dir.shift, repeat) }
+  end
+
+  def traverse_intercardinal_directions(repeat = true)
+    inter_dir = ['up-right', 'up-left', 'down-right', 'down-left']
+
+    4.times { traverse(inter_dir.shift, repeat) }
   end
 
   def log_coordinates(coordinates)
