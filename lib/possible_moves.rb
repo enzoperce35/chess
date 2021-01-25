@@ -160,6 +160,63 @@ class PossibleMoves
     possible_moves
   end
 
+  def generate_rook_moves
+    traverse 'up'
+
+    traverse 'down'
+
+    traverse 'left'
+
+    traverse 'right'
+
+    possible_moves
+  end
+
+  def generate_bishop_moves
+    traverse 'up-right'
+
+    traverse 'up-left'
+
+    traverse 'down-right'
+
+    traverse 'down-left'
+
+    possible_moves
+  end
+
+  def generate_knight_moves
+    altered_coordinates = alter_knight_coordinates(get_row_index, get_col_index)
+
+    knight_moves = altered_coordinates.map { |coords| convert_to_board_position(coords) }
+
+    log_knight_moves(knight_moves)
+
+    possible_moves
+  end
+
+  def alter_knight_coordinates(row_index, col_index)
+    [[row_index - 1, col_index + 3],
+     [row_index - 1, col_index - 3],
+     [row_index + 1, col_index + 3],
+     [row_index + 1, col_index - 3],
+     [row_index - 2, col_index + 1],
+     [row_index - 2, col_index - 1],
+     [row_index + 2, col_index + 1],
+     [row_index + 2, col_index - 1]]
+  end
+
+  def log_knight_moves(moves)
+    return moves if moves.length == 0
+
+    @new_square = moves.shift
+
+    coordinates = convert_to_board_coordinates(new_square)
+
+    log_new_square unless over_the_border?(coordinates)
+
+    log_knight_moves(moves)
+  end
+
   def traverse(direction, single_move = false, row_index = get_row_index, column_index = get_col_index)
     coordinates = alter_coordinates(direction, row_index, column_index)
 
