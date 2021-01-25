@@ -61,6 +61,8 @@ class PossibleMoves
       [row_index += 1, column_index -= 1]
     when 'down-left'
       [row_index -= 1, column_index -= 1]
+    when 'double_up'
+      [row_index, column_index + 2]
     end
   end
 
@@ -195,10 +197,10 @@ class PossibleMoves
   end
 
   def alter_knight_coordinates(row_index, col_index)
-    [[row_index - 1, col_index + 3],
-     [row_index - 1, col_index - 3],
-     [row_index + 1, col_index + 3],
-     [row_index + 1, col_index - 3],
+    [[row_index - 1, col_index + 2],
+     [row_index - 1, col_index - 2],
+     [row_index + 1, col_index + 2],
+     [row_index + 1, col_index - 2],
      [row_index - 2, col_index + 1],
      [row_index - 2, col_index - 1],
      [row_index + 2, col_index + 1],
@@ -212,9 +214,17 @@ class PossibleMoves
 
     coordinates = convert_to_board_coordinates(new_square)
 
-    log_new_square unless over_the_border?(coordinates)
+    log_new_square unless out_of_border?(coordinates)
 
     log_knight_moves(moves)
+  end
+
+  def generate_pawn_moves
+    traverse('up', true)
+
+    traverse('double_up', true) unless piece_is_moved?
+
+    possible_moves
   end
 
   def traverse(direction, single_move = false, row_index = get_row_index, column_index = get_col_index)
@@ -222,18 +232,20 @@ class PossibleMoves
 
     row_index, column_index = coordinates
 
-    return nil if over_the_border?(coordinates)
-
-    @new_square = convert_to_board_position(coordinates)
-
-    log_new_square
+    log_coordinates(coordinates)
 
     return nil if square_is_occupied? || unable_to_continue?(direction) || single_move
 
     traverse(direction, single_move, row_index, column_index)
   end
 
-  def over_the_border?(coordinates)
+  def log_coordinates(coordinates)
+    @new_square = out_of_border?(coordinates) ? nil : convert_to_board_position(coordinates)
+
+    log_new_square
+  end
+
+  def out_of_border?(coordinates)
     row_index, column_index = coordinates
 
     !row_index.between?(0,7) || !column_index.between?(1,8)
