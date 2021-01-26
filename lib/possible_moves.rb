@@ -171,7 +171,7 @@ class PossibleMoves
 
   #assign converted board coordinates to @new_square then push to @possible_moves
   def log_coordinates(coordinates)
-    @new_square = out_of_border?(coordinates) ? nil : convert_to_board_position(coordinates)
+    @new_square = convert_to_board_position(coordinates)
 
     log_new_square
   end
@@ -182,7 +182,7 @@ class PossibleMoves
 
     row_index, column_index = coordinates
 
-    log_coordinates(coordinates)
+    log_coordinates(coordinates) unless out_of_border?(coordinates)
 
     return nil if square_is_occupied? || unable_to_continue?(direction) || !multi_moves
 
