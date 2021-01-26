@@ -58,15 +58,19 @@ class PossibleMoves
     end
   end
 
-  def alter_knight_coordinates(row_index, col_index)
-    [[row_index - 1, col_index + 2],
-     [row_index - 1, col_index - 2],
-     [row_index + 1, col_index + 2],
-     [row_index + 1, col_index - 2],
-     [row_index - 2, col_index + 1],
-     [row_index - 2, col_index - 1],
-     [row_index + 2, col_index + 1],
-     [row_index + 2, col_index - 1]]
+  def alter_knight_coordinates(row_index, col_index, array = [])
+    coords = [[row_index - 1, col_index + 2],
+              [row_index - 1, col_index - 2],
+              [row_index + 1, col_index + 2],
+              [row_index + 1, col_index - 2],
+              [row_index - 2, col_index + 1],
+              [row_index - 2, col_index - 1],
+              [row_index + 2, col_index + 1],
+              [row_index + 2, col_index - 1]]
+
+    coords.each { |coord| array << coord unless out_of_border?(coord) }
+
+    array
   end
 
   #returns true if the traversing piece is on one of the chess board's four borders
