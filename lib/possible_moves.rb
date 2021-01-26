@@ -17,15 +17,7 @@ class PossibleMoves
     piece['moved?']
   end
 
-  #returns an array of opposing player's piece positions
-  def get_opposing_pieces(arr = [])
-    board.opposing_player.active_pieces.each_value do |val|
-      arr << val['position']
-    end
-    arr
-  end
-
-  #get the row index and column index of the chess piece inside the chess board
+  #get the row index and column index of the piece's position on the chess board
   def get_row_index
     piece_position = piece['position']
 
@@ -42,7 +34,7 @@ class PossibleMoves
     square['col_ind']
   end
 
-  #modifies the values of row_index and column_index depending on the traversal direction of the piece
+  #alters the values of row_index and column_index of the piece's position on the chess board
   def alter_coordinates(direction, row_index, column_index)
     case direction
     when 'up'
@@ -66,7 +58,18 @@ class PossibleMoves
     end
   end
 
-  #determines if the traversal cannot continue because piece is on chess borders
+  def alter_knight_coordinates(row_index, col_index)
+    [[row_index - 1, col_index + 2],
+     [row_index - 1, col_index - 2],
+     [row_index + 1, col_index + 2],
+     [row_index + 1, col_index - 2],
+     [row_index - 2, col_index + 1],
+     [row_index - 2, col_index - 1],
+     [row_index + 2, col_index + 1],
+     [row_index + 2, col_index - 1]]
+  end
+
+  #returns true if the traversing piece is on one of the chess board's four borders
   def unable_to_continue?(direction)
     case direction
     when 'up',
@@ -104,24 +107,98 @@ class PossibleMoves
     board.squares[new_square]['row_ind'] == 1
   end
 
-  #generate all possible moves the piece can make and put it into an '@possible_moves' array
-  def generate_possible_moves(piece_name = piece['name'])
-    case piece_name
-    when 'king'
-      generate_king_moves
-    when 'queen'
-      generate_queen_moves
-    when 'rook'
-      generate_rook_moves
-    when 'bishop'
-      generate_bishop_moves
-    when 'knight'
-      generate_knight_moves
-    when 'pawn'
-      generate_pawn_moves
+  def out_of_border?(coordinates)
+    row_index, column_index = coordinates
+
+    !row_index.between?(0,7) || !column_index.between?(1,8)
+  end
+
+  #push @new_square unless board coordinates is not out of the chess borders
+  def log_knight_moves(moves)
+    return moves if moves.length == 0
+
+    @new_square = moves.shift
+
+    coordinates = convert_to_board_coordinates(new_square)
+
+    log_new_square unless out_of_border?(coordinates)
+
+    log_knight_moves(moves)
+  end
+
+  #returns true if @new_square is occupied by opponent's piece
+  def square_is_opponent_occupied?
+    opposing_pieces = get_opposing_pieces(board)
+
+    opposing_pieces.each.include?(new_square)
+  end
+
+  #returns true if @new_square is not empty
+  def square_is_occupied?
+    return false if new_square == piece['position']
+
+    square = board.squares[new_square]
+
+    !square['square'].include?('    ')
+  end
+
+  #push @new_square to @possible_moves if it is occupied by opponent's square
+  def log_opponent_square
+    opponent_pieces = board.opposing_player.active_pieces
+
+    opponent_pieces.each_value do |opponent|
+      log_phrase = opponent['position'] + "(capture opposing #{opponent['name']})"
+
+      @possible_moves << log_phrase if opponent['position'] == new_square
     end
   end
 
+  #push @new_square to @possible_moves
+  def log_square
+    @possible_moves << new_square
+  end
+
+  #push @new_square to @possible_moves if square is empty or with an opponent's piece
+  def log_new_square
+    log_square unless square_is_occupied?
+
+    log_opponent_square if square_is_opponent_occupied?
+  end
+
+  #assign converted board coordinates to @new_square then push to @possible_moves
+  def log_coordinates(coordinates)
+    @new_square = out_of_border?(coordinates) ? nil : convert_to_board_position(coordinates)
+
+    log_new_square
+  end
+
+  #alter the board coordinates of the piece until move is not possible
+  def traverse(direction, multi_moves = true, row_index = get_row_index, column_index = get_col_index)
+    coordinates = alter_coordinates(direction, row_index, column_index)
+
+    row_index, column_index = coordinates
+
+    log_coordinates(coordinates)
+
+    return nil if square_is_occupied? || unable_to_continue?(direction) || !multi_moves
+
+    traverse(direction, multi_moves, row_index, column_index)
+  end
+
+  #directs the travesal with the basic directions(cardinal) and diagonal directions(intercardinal)
+  def traverse_cardinal_directions(multi_moves = true)
+    card_dir = ['up', 'down', 'left', 'right']
+
+    4.times { traverse(card_dir.shift, multi_moves) }
+  end
+
+  def traverse_intercardinal_directions(multi_moves = true)
+    inter_dir = ['up-right', 'up-left', 'down-right', 'down-left']
+
+    4.times { traverse(inter_dir.shift, multi_moves) }
+  end
+
+  #traverse squares in the direction the piece is allowed to move; push to @possible_moves
   def generate_king_moves
     traverse_cardinal_directions(false)
 
@@ -160,29 +237,6 @@ class PossibleMoves
     possible_moves
   end
 
-  def alter_knight_coordinates(row_index, col_index)
-    [[row_index - 1, col_index + 2],
-     [row_index - 1, col_index - 2],
-     [row_index + 1, col_index + 2],
-     [row_index + 1, col_index - 2],
-     [row_index - 2, col_index + 1],
-     [row_index - 2, col_index - 1],
-     [row_index + 2, col_index + 1],
-     [row_index + 2, col_index - 1]]
-  end
-
-  def log_knight_moves(moves)
-    return moves if moves.length == 0
-
-    @new_square = moves.shift
-
-    coordinates = convert_to_board_coordinates(new_square)
-
-    log_new_square unless out_of_border?(coordinates)
-
-    log_knight_moves(moves)
-  end
-
   def generate_pawn_moves
     traverse('up', false)
 
@@ -191,74 +245,21 @@ class PossibleMoves
     possible_moves
   end
 
-  def traverse(direction, single_move = true, row_index = get_row_index, column_index = get_col_index)
-    coordinates = alter_coordinates(direction, row_index, column_index)
-
-    row_index, column_index = coordinates
-
-    log_coordinates(coordinates)
-
-    return nil if square_is_occupied? || unable_to_continue?(direction) || !single_move
-
-    traverse(direction, single_move, row_index, column_index)
-  end
-
-  def traverse_cardinal_directions(repeat = true)
-    card_dir = ['up', 'down', 'left', 'right']
-
-    4.times { traverse(card_dir.shift, repeat) }
-  end
-
-  def traverse_intercardinal_directions(repeat = true)
-    inter_dir = ['up-right', 'up-left', 'down-right', 'down-left']
-
-    4.times { traverse(inter_dir.shift, repeat) }
-  end
-
-  def log_coordinates(coordinates)
-    @new_square = out_of_border?(coordinates) ? nil : convert_to_board_position(coordinates)
-
-    log_new_square
-  end
-
-  def out_of_border?(coordinates)
-    row_index, column_index = coordinates
-
-    !row_index.between?(0,7) || !column_index.between?(1,8)
-  end
-
-  #push '@new_square' to '@possible_moves' array square is empty or with an opponent's piece
-  def log_new_square
-    log_square unless square_is_occupied?
-
-    log_opponent_square if square_is_opponent_occupied?
-  end
-
-  def log_square
-    @possible_moves << new_square
-  end
-
-  def square_is_occupied?
-    return false if new_square == piece['position']
-
-    square = board.squares[new_square]
-
-    !square['square'].include?('    ')
-  end
-
-  def log_opponent_square
-    opponent_pieces = board.opposing_player.active_pieces
-
-    opponent_pieces.each_value do |opponent|
-      log_phrase = opponent['position'] + "(capture opposing #{opponent['name']})"
-
-      @possible_moves << log_phrase if opponent['position'] == new_square
+  #generate all possible moves the piece can make
+  def generate_possible_moves(piece_name = piece['name'])
+    case piece_name
+    when 'king'
+      generate_king_moves
+    when 'queen'
+      generate_queen_moves
+    when 'rook'
+      generate_rook_moves
+    when 'bishop'
+      generate_bishop_moves
+    when 'knight'
+      generate_knight_moves
+    when 'pawn'
+      generate_pawn_moves
     end
-  end
-
-  def square_is_opponent_occupied?
-    opposing_pieces = get_opposing_pieces
-
-    opposing_pieces.each.include?(new_square)
   end
 end
