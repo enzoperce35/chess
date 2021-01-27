@@ -17,4 +17,16 @@ module ConsoleInterface
 
     ans
   end
+
+  def select_move_interface(player, string, piece = nil)
+    items = string.join.scan(/(\w\d)/)
+
+    items.delete([piece.upcase]) unless piece.nil?
+
+    puts "#{player}'s turn, please select your next move. e.g '#{items[0].join}'"
+
+    ans = gets.chomp! until items.include?([ans])
+
+    ans
+  end
 end
