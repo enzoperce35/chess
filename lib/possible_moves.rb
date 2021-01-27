@@ -9,7 +9,7 @@ class PossibleMoves
     @piece = piece
     @board = board
     @new_square = nil
-    @possible_moves = []
+    @possible_moves = piece['moves']
   end
 
   #determines if the piece has been moved from it's original position
@@ -208,7 +208,7 @@ class PossibleMoves
 
     traverse_intercardinal_directions(false)
 
-    possible_moves
+    piece
   end
 
   def generate_queen_moves
@@ -216,19 +216,19 @@ class PossibleMoves
 
     traverse_intercardinal_directions
 
-    possible_moves
+    piece
   end
 
   def generate_rook_moves
     traverse_cardinal_directions
 
-    possible_moves
+    piece
   end
 
   def generate_bishop_moves
     traverse_intercardinal_directions
 
-    possible_moves
+    piece
   end
 
   def generate_knight_moves
@@ -238,7 +238,7 @@ class PossibleMoves
 
     log_knight_moves(knight_moves)
 
-    possible_moves
+    piece
   end
 
   def generate_pawn_moves
@@ -246,7 +246,7 @@ class PossibleMoves
 
     traverse('double_up', false) unless piece_is_moved?
 
-    possible_moves
+    piece
   end
 
   #generate all possible moves the piece can make
