@@ -30,6 +30,24 @@ class Chess
     turn_count.odd? ? player1 : player2
   end
 
+  def ask_for_move(chosen_piece)
+    message = possible_moves_side_message(chosen_piece)
+
+    board.draw_board_with_message(board.squares, message)
+
+    select_move_interface(turn_player.name, message, chosen_piece['position'])
+  end
+
+
+  #display current board with side message and prompt turn_player for a piece to move
+  def ask_for_a_piece
+    message = active_pieces_side_message(turn_player)
+
+    board.draw_board_with_message(board.squares, message)
+
+    select_piece_interface(turn_player.name, message)
+  end
+
   def make_move(piece = nil)
     chosen_piece = ask_for_a_piece
 
@@ -39,16 +57,9 @@ class Chess
 
     new_move = PossibleMoves.new(chosen_piece, board)
 
-    new_move.generate_possible_moves
-  end
+    chosen_piece = new_move.generate_possible_moves
 
-  #display current board with side message and prompt turn_player for a piece to move
-  def ask_for_a_piece
-    message = active_pieces_side_message(turn_player)
-
-    board.draw_board_with_message(board.squares, message)
-
-    select_piece_interface(turn_player.name, message)
+    ask_for_move(chosen_piece)
   end
 
   #program controller
