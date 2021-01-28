@@ -23,7 +23,7 @@ class Pieces
     count.times do |i|
       position = alpha[i]
 
-      set["#{piece}#{i+1}"] = { 'image'=>image, 'position'=>"#{position}#{row}", 'moves'=>[] }
+      set["#{piece}#{i+1}"] = { 'name'=>piece, 'image'=>image, 'position'=>"#{position}#{row}", 'moved?'=>false, 'moves'=>[] }
     end
   end
 
