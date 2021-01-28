@@ -57,14 +57,20 @@ class Chess
     turn_player.active_pieces[piece]
   end
 
-  def make_move
+  def make_move(message = nil)   #fix here!
+    puts message unless message.nil?
+
     chosen_piece = ask_for_a_piece
 
     chosen_piece_with_moves = get_possible_moves(chosen_piece)
 
     move = ask_for_a_move_interface(chosen_piece_with_moves, board)
 
-    move == 'select other piece' ? make_move : apply_move(chosen_piece, move)
+    move_selection_unsuccessful?(move) ? make_move(move) : apply_move(chosen_piece, move)
+  end
+
+  def move_selection_unsuccessful?(move)
+    move.include?('re-select') || move.include?('No possible moves')
   end
 
   #program controller

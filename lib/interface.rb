@@ -30,6 +30,9 @@ module ConsoleInterface
 
     all_squares = board.squares.keys
 
+    return "\n\n\nNo possible moves for '#{piece_name}-#{piece_position}'!\n"\
+           "Please choose another piece" if piece_moves.length.zero?
+
     puts "\n\nPlease select a square to put your #{piece_name}"
 
     ans = gets.chomp! until all_squares.include?(ans)
@@ -60,7 +63,7 @@ module ConsoleInterface
     piece_name = piece['name']
 
     if option == 'p'
-      "select other piece"
+      "\n\n\nPlease re-select your piece"
     elsif option == 'l'
       puts "\n'#{piece_name}-#{piece_position}' valid moves:",
            piece_moves
