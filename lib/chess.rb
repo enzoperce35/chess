@@ -30,40 +30,49 @@ class Chess
     turn_count.odd? ? player1 : player2
   end
 
-  def ask_for_move(chosen_piece)
-    message = possible_moves_side_message(chosen_piece)
+  def apply_move(chosen_piece, move)
+    turn_player.active_pieces.map do |key,val|
+       val['position'] = move if val == chosen_piece
+    end
 
-    board.draw_board_with_message(board.squares, message)
-
-    select_move_interface(turn_player.name, message, chosen_piece['position'])
+    @board = Board.new(turn_player, opposing_player)
   end
 
+  def get_possible_moves(chosen_piece)
+    new_move = PossibleMoves.new(chosen_piece, board)
+
+    new_move.generate_possible_moves
+  end
 
   #display current board with side message and prompt turn_player for a piece to move
-  def ask_for_a_piece
+  def ask_for_a_piece(piece = nil)
     message = active_pieces_side_message(turn_player)
 
     board.draw_board_with_message(board.squares, message)
 
-    select_piece_interface(turn_player.name, message)
-  end
-
-  def make_move(piece = nil)
-    chosen_piece = ask_for_a_piece
+    chosen_piece = select_piece_interface(turn_player, message)
 
     turn_player.active_pieces.each { |key,val| piece = key if val.values.include?(chosen_piece) }
 
-    chosen_piece = turn_player.active_pieces[piece]
+    turn_player.active_pieces[piece]
+  end
 
-    new_move = PossibleMoves.new(chosen_piece, board)
+  def make_move
+    chosen_piece = ask_for_a_piece
 
-    chosen_piece = new_move.generate_possible_moves
+    chosen_piece_with_moves = get_possible_moves(chosen_piece)
 
-    ask_for_move(chosen_piece)
+    move = ask_for_a_move_interface(chosen_piece_with_moves, board)
+
+    move == 'select other piece' ? make_move : apply_move(chosen_piece, move)
   end
 
   #program controller
   def start
+    board.update_board
+
+    make_move
+
     board.update_board
 
     make_move
