@@ -2,19 +2,22 @@ require_relative 'player.rb'
 require_relative 'board.rb'
 require_relative 'possible_moves.rb'
 require_relative 'side_message.rb'
+require_relative 'helper.rb'
 require 'colorize'
 
 class Chess
-  attr_accessor :turn_count, :player1, :player2, :board
+  attr_accessor :turn_count, :player1, :player2, :board, :game_over
 
   include ConsoleInterface
   include SideMessage
+  include Helper
 
   def initialize
     @turn_count = 0
     @player1 = Player.new('white')
     @player2 = Player.new('black')
     @board = Board.new(turn_player, opposing_player)
+    @game_over = false
 
     player1.name = 'John'  #not included
     player2.name = 'Mark'  #not included
@@ -30,6 +33,7 @@ class Chess
     turn_count.odd? ? player1 : player2
   end
 
+  #alter the pieces' positions then use those to instantiate 'Board'; re-assign to @board
   def apply_move(chosen_piece, move)
     turn_player.active_pieces.map do |key,val|
        val['position'] = move if val == chosen_piece
@@ -38,49 +42,66 @@ class Chess
     @board = Board.new(turn_player, opposing_player)
   end
 
+  #returns an array of the chosen pieces possible moves
   def get_possible_moves(chosen_piece)
     new_move = PossibleMoves.new(chosen_piece, board)
 
     new_move.generate_possible_moves
   end
 
-  #display current board with side message and prompt turn_player for a piece to move
-  def ask_for_a_piece(piece = nil)
-    message = active_pieces_side_message(turn_player)
-
-    board.draw_board_with_message(board.squares, message)
-
-    chosen_piece = select_piece_interface(turn_player, message)
-
-    turn_player.active_pieces.each { |key,val| piece = key if val.values.include?(chosen_piece) }
-
-    turn_player.active_pieces[piece]
+  #returns true if the input does not have the following words
+  def input_is_valid?(input)
+    !input.include?('re-select') && !input.include?('No possible moves')
   end
 
-  def make_move(message = nil)   #fix here!
-    puts message unless message.nil?
+  #prompt for input; locate the input's values then return it with it's possible moves
+  def ask_for_a_piece(piece = nil)
+    chosen_piece = select_piece_interface(turn_player, board)
+
+    chosen_piece = locate_object(turn_player, chosen_piece)
+
+    get_possible_moves(chosen_piece)
+  end
+
+  #increments @turn_count, thus switching the players
+  def next_turn
+    @turn_count += 1
+  end
+
+  #asks for an input; apply input if valid otherwise repeat 'make_move' but with an extra message
+  def make_move(extra_message = nil)
+    puts extra_message unless extra_message.nil?
 
     chosen_piece = ask_for_a_piece
 
-    chosen_piece_with_moves = get_possible_moves(chosen_piece)
-
-    move = ask_for_a_move_interface(chosen_piece_with_moves, board)
-
-    move_selection_unsuccessful?(move) ? make_move(move) : apply_move(chosen_piece, move)
+    input = ask_for_a_move_interface(chosen_piece, board)
+  
+    input_is_valid?(input) ? apply_move(chosen_piece, input) : make_move(input)
   end
 
-  def move_selection_unsuccessful?(move)
-    move.include?('re-select') || move.include?('No possible moves')
+  #displays the chess board with the list of turn player's active pieces
+  def display_board_with_message
+    active_pieces_message = active_pieces_side_message(turn_player)
+
+    board_with_message = board.draw_board_with_message(board, active_pieces_message)
+
+    puts board_with_message
+  end
+
+  def switch_board_sides
+    board.update_board
   end
 
   #program controller
   def start
-    board.update_board
+    until game_over == true
+      switch_board_sides
 
-    make_move
+      display_board_with_message
 
-    board.update_board
+      make_move
 
-    make_move
+      next_turn
+    end
   end
 end
