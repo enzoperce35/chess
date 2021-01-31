@@ -1,15 +1,17 @@
 require_relative 'chess_parts.rb'
+require_relative 'helper.rb'
 require 'colorize'
 
 class Board
   attr_accessor :squares, :turn_player, :opposing_player
 
   include ChessParts
+  include Helper
 
   def initialize(turn_player, opposing_player)
-    @squares = create_squares
     @turn_player = turn_player
     @opposing_player = opposing_player
+    @squares = create_squares
   end
 
   #creates chess_board attributes in hash form
@@ -43,7 +45,8 @@ class Board
   end
 
   #updates the chess board by placing each players' active pieces
-  def update_board
+  def update_board #fixed this one with 'alter_opposing_pieces'
+    #alter_opposing_pieces(opposing_player.active_pieces) #this is working but the altered values need to be altered back to original value after using!
     2.times do |i|
       if i.zero?
         place(opposing_player.active_pieces)
@@ -63,8 +66,17 @@ class Board
     end
   end
 
+  def alter_opposing_pieces(pieces)
+    pieces.values.map do |value|
+      value['position'][-1] = (value['position'][-1].to_i - 9).abs.to_s
+    end
+
+    pieces.values
+  end
+
   #displays the board with a message by converting hash into a string
-  def draw_board_with_message(squares_hash, message)
+  def draw_board_with_message(board, message)
+    squares_hash = board.squares
     board_string = convert_to_string(squares_hash)
 
     message.each do |line|
@@ -72,22 +84,7 @@ class Board
       board_string = board_string.insert(index+1, line)
     end
 
-    puts board_string
-  end
-
-  def convert_to_string(squares, str = '')
-    squares.values.each do |square|
-      sqr_image = square['square']
-      row_index = square['row_ind']
-      col_index = square['col_ind']
-
-      str += y_coordinate(col_index) if row_index == 1
-
-      str += sqr_image
-
-      str += new_space if row_index == 8
-    end
-    ("\n"*2) + str + X_COORDINATES.colorize(color: :red) + ("\n"*2)
+    board_string
   end
 
   def y_coordinate(col_index)

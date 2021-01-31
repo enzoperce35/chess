@@ -13,36 +13,45 @@ class Chess
   include Helper
 
   def initialize
-    @turn_count = 0
+    @turn_count = 1
     @player1 = Player.new('white')
     @player2 = Player.new('black')
-    @board = Board.new(turn_player, opposing_player)
+    @board = nil
     @game_over = false
 
     player1.name = 'John'  #not included
     player2.name = 'Mark'  #not included
   end
 
+  def set_positions
+    alter_pieces(turn_player.active_pieces)
+    alter_pieces(opposing_player.active_pieces)
+  end
+
   #returns the player which will make a move
   def turn_player
-    turn_count.odd? ? player2 : player1
+    turn_count.odd? ? player1 : player2
   end
 
   #returns the player which will make a move next
   def opposing_player
-    turn_count.odd? ? player1 : player2
+    turn_count.odd? ? player2 : player1
   end
 
   #alter the pieces' positions then use those to instantiate 'Board'; re-assign to @board
   def apply_move(chosen_piece, move)
+    opposing_player.active_pieces.map do |key,val|
+      opposing_player.active_pieces.delete(key) if val['position'] == move
+    end
+
     turn_player.active_pieces.map do |key,val|
-       val['position'] = move if val == chosen_piece
+      val['position'] = move if val == chosen_piece
     end
 
     @board = Board.new(turn_player, opposing_player)
   end
 
-  #returns an array of the chosen pieces possible moves
+  #returns an array of the chosen piece's possible moves
   def get_possible_moves(chosen_piece)
     new_move = PossibleMoves.new(chosen_piece, board)
 
@@ -75,7 +84,7 @@ class Chess
     chosen_piece = ask_for_a_piece
 
     input = ask_for_a_move_interface(chosen_piece, board)
-  
+
     input_is_valid?(input) ? apply_move(chosen_piece, input) : make_move(input)
   end
 
@@ -89,6 +98,10 @@ class Chess
   end
 
   def switch_board_sides
+    set_positions unless turn_count == 1
+
+    @board = Board.new(turn_player, opposing_player)
+
     board.update_board
   end
 
