@@ -1,4 +1,8 @@
+require_relative 'helper.rb'
+
 module ConsoleInterface
+
+  include Helper
 
   #ask and get the player's name
   def prompt_name_interface(piece_color)
@@ -8,17 +12,16 @@ module ConsoleInterface
   end
 
   #ask and the player's piece of choice
-  def select_piece_interface(player, string)
+  def select_piece_interface(player, board)
     name = player.name
-
-    pieces = string.join.scan(/(\w\d)/)
+    player_pieces = get_turn_player_pieces(board)
 
     puts "#{name}'s turn\n\n".rjust(26),
-         "Please select your chess piece. e.g. '#{pieces[0].join}"
+         "Please select your chess piece. e.g. '#{player_pieces[0]}"
 
-    ans = gets.chomp! until pieces.include?([ans])
+    answer = gets.chomp! until player_pieces.include?(answer)
 
-    ans
+    answer
   end
 
   def ask_for_a_move_interface(piece, board)
@@ -42,16 +45,16 @@ module ConsoleInterface
 
   def validate_answer(ans, piece, board)
     piece_position = piece['position']
-    piece_moves = piece['moves']
+    piece_moves = trim_capture_messages(piece['moves'])
     piece_name = piece['name']
-
+    trim_capture_messages(piece['moves'])
 
     if piece_moves.include?(ans)
       ans
     else
       puts "\n\ninvalid move '#{piece_position} to #{ans}'..., please choose an option below\n",
            "'p' => choose another piece",
-           "'l' => get a list of '#{piece_name}-#{piece_position}' moves"
+           "'l' => get a list of '#{piece_name}-#{piece_position}' moves\n\n"
            option = gets.chomp! until ['p','l'].include?(option)
            implement_option(option, piece, board)
     end
@@ -63,10 +66,11 @@ module ConsoleInterface
     piece_name = piece['name']
 
     if option == 'p'
-      "\n\n\nPlease re-select your piece"
+      "\n\nPlease re-select your piece\n\n"
     elsif option == 'l'
       puts "\n'#{piece_name}-#{piece_position}' valid moves:",
-           piece_moves
+           piece_moves,
+           "\n"
       move = gets.chomp! until piece_moves.include?(move)
       move
     end
