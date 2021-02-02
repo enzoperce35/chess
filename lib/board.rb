@@ -45,8 +45,7 @@ class Board
   end
 
   #updates the chess board by placing each players' active pieces
-  def update_board #fixed this one with 'alter_opposing_pieces'
-    #alter_opposing_pieces(opposing_player.active_pieces) #this is working but the altered values need to be altered back to original value after using!
+  def populate_board
     2.times do |i|
       if i.zero?
         place(opposing_player.active_pieces)

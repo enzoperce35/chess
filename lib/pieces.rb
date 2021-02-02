@@ -1,8 +1,10 @@
 require_relative 'chess_parts.rb'
+require_relative 'helper.rb'
 require 'colorize'
 
 class Pieces
   include ChessParts
+  include Helper
 
   #create each players' chess pieces('color one with black') with their attributes in a hash
   def create_pieces(piece_color, set = Hash.new)
@@ -25,9 +27,5 @@ class Pieces
 
       set["#{piece}#{i+1}"] = { 'name'=>piece, 'image'=>image, 'position'=>"#{position}#{row}", 'moved?'=>false, 'moves'=>[] }
     end
-  end
-
-  def colorize_piece(image)
-    image.colorize(color: :black)
   end
 end

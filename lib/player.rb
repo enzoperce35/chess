@@ -8,7 +8,7 @@ class Player < Pieces
 
   def initialize(piece_color)
     @piece_color = piece_color
-    @name = prompt_name(piece_color)
+    @name = '' #prompt_name_interface(piece_color)
     @active_pieces = create_pieces(piece_color)
   end
 end

@@ -47,7 +47,7 @@ module ConsoleInterface
     piece_position = piece['position']
     piece_moves = trim_capture_messages(piece['moves'])
     piece_name = piece['name']
-    trim_capture_messages(piece['moves'])
+    #trim_capture_messages(piece['moves'])
 
     if piece_moves.include?(ans)
       ans
@@ -64,6 +64,7 @@ module ConsoleInterface
     piece_position = piece['position']
     piece_moves = piece['moves']
     piece_name = piece['name']
+    trimmed_piece_moves = trim_capture_messages(piece_moves)
 
     if option == 'p'
       "\n\nPlease re-select your piece\n\n"
@@ -71,7 +72,7 @@ module ConsoleInterface
       puts "\n'#{piece_name}-#{piece_position}' valid moves:",
            piece_moves,
            "\n"
-      move = gets.chomp! until piece_moves.include?(move)
+      move = gets.chomp! until trimmed_piece_moves.include?(move)
       move
     end
   end

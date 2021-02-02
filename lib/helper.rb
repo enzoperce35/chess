@@ -56,7 +56,7 @@ module Helper
     ("\n"*2) + str + X_COORDINATES.colorize(color: :red) + ("\n"*2)
   end
 
-  def alter_pieces(pieces)
+  def alter(pieces)
     alpha = ('a'..'h').to_a
     pieces.values.map do |value|
       ind = alpha.index(value['position'][0])
@@ -68,12 +68,14 @@ module Helper
     pieces.values
   end
 
-  #a3 - h6
-
   #trim an array item if the item has a capture message. e.g.'h5(capture opposing pawn)' => 'h5'
-  def trim_capture_messages(array)
-    array.map { |move| move.slice!(2, move.length) if move.length > 2 }
+  def trim_capture_messages(array, trimmed_items = [])
+    array.each { |move| trimmed_items << move[0,2] }
 
-    array
+    trimmed_items
+  end
+
+  def colorize_piece(image)
+    image.colorize(color: :black)
   end
 end
