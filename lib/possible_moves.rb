@@ -8,7 +8,7 @@ class PossibleMoves
   def initialize(piece, board)
     @piece = piece
     @board = board
-    @new_square = nil
+    @new_square = piece['position']
     @possible_moves = piece['moves']
   end
 
@@ -184,7 +184,7 @@ class PossibleMoves
 
     log_coordinates(coordinates) unless out_of_border?(coordinates)
 
-    return nil if square_is_occupied? || unable_to_continue?(direction) || !multi_moves
+    return nil if square_is_occupied? || unable_to_continue?(direction) || !multi_moves || out_of_border?(coordinates)
 
     traverse(direction, multi_moves, row_index, column_index)
   end

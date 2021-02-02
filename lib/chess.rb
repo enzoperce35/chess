@@ -23,9 +23,9 @@ class Chess
     player2.name = 'Mark'  #not included
   end
 
-  def set_positions
-    alter_pieces(turn_player.active_pieces)
-    alter_pieces(opposing_player.active_pieces)
+  #alter each player's 'active pieces'
+  def alter_active_pieces
+    2.times { |i| i.zero? ? alter(turn_player.active_pieces) : alter(opposing_player.active_pieces) }
   end
 
   #returns the player which will make a move
@@ -46,6 +46,8 @@ class Chess
 
     turn_player.active_pieces.map do |key,val|
       val['position'] = move if val == chosen_piece
+      val['moves'] = []
+      val['moved?'] = true
     end
 
     @board = Board.new(turn_player, opposing_player)
@@ -97,18 +99,20 @@ class Chess
     puts board_with_message
   end
 
-  def switch_board_sides
-    set_positions unless turn_count == 1
+
+  def update_board
+    alter_active_pieces unless turn_count == 1
 
     @board = Board.new(turn_player, opposing_player)
 
-    board.update_board
+    board.populate_board
   end
 
   #program controller
   def start
+    piece_moves_tester  #not included!
     until game_over == true
-      switch_board_sides
+      update_board
 
       display_board_with_message
 
@@ -116,5 +120,57 @@ class Chess
 
       next_turn
     end
+  end
+end
+
+
+#just a tester, remove unnecessary or put up pieces that is needed to test piece moves
+#to be put on the very first line of 'start_method' of 'chess.rb'
+def piece_moves_tester
+  @board = Board.new(turn_player, opposing_player)
+
+  delete_all_black
+
+  delete_all_white
+
+  #place_piece('bishop', 'c8', opposing_player)
+  place_piece('rook', 'g8', opposing_player)
+  place_piece('queen', 'h2', turn_player)
+end
+
+#remove all white pieces
+def delete_all_white
+  turn_player.active_pieces = {}
+end
+
+#remove all black_pieces
+def delete_all_black
+  opposing_player.active_pieces = {}
+end
+
+#creates a name, image, position values to each or either of the 'turn' or 'opposing' player's 'active_pieces'
+def place_piece(piece, index, player)
+  image = get_image(piece)
+
+  image = colorize_piece(image) if player.piece_color == 'black'
+
+  player.active_pieces.store("#{piece}1", {"name"=>"#{piece}", "image"=>image, "position"=>"#{index}", "moved?"=>false, "moves"=>[]})
+end
+
+#returns the piece image
+def get_image(piece_name)
+  case piece_name
+  when 'king'
+    " \u265A  "
+  when 'queen'
+    " \u265B  "
+  when 'bishop'
+    " \u265D  "
+  when 'rook'
+    " \u265C  "
+  when 'knight'
+    " \u265E  "
+  when 'pawn'
+    " \u265F  "
   end
 end
