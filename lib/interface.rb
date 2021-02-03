@@ -1,8 +1,15 @@
 require_relative 'helper.rb'
+require_relative 'possible_moves.rb'
 
-module ConsoleInterface
+class ConsoleInterface
+  attr_accessor :player, :board
 
   include Helper
+
+  def initialize(player, board)
+    @player = player
+    @board = board
+  end
 
   #ask and get the player's name
   def prompt_name_interface(piece_color)
@@ -11,8 +18,14 @@ module ConsoleInterface
     gets.chomp!
   end
 
+  def get_possible_moves(chosen_piece)
+    new_move = PossibleMoves.new(chosen_piece, board)
+
+    new_move.generate_possible_moves
+  end
+
   #ask and the player's piece of choice
-  def select_piece_interface(player, board)
+  def ask_for_piece
     name = player.name
     player_pieces = get_turn_player_pieces(board)
 
@@ -21,10 +34,12 @@ module ConsoleInterface
 
     answer = gets.chomp! until player_pieces.include?(answer)
 
-    answer
+    ans = locate_object_values(player, answer)
+
+    get_possible_moves(ans)
   end
 
-  def ask_for_a_move_interface(piece, board)
+  def ask_for_move(piece)
     piece_name = piece['name']
 
     piece_position = piece['position']
@@ -40,10 +55,10 @@ module ConsoleInterface
 
     ans = gets.chomp! until all_squares.include?(ans)
 
-    validate_answer(ans, piece, board)
+    validate_answer(ans, piece)
   end
 
-  def validate_answer(ans, piece, board)
+  def validate_answer(ans, piece)
     piece_position = piece['position']
     piece_moves = trim_capture_messages(piece['moves'])
     piece_name = piece['name']
@@ -56,11 +71,11 @@ module ConsoleInterface
            "'p' => choose another piece",
            "'l' => get a list of '#{piece_name}-#{piece_position}' moves\n\n"
            option = gets.chomp! until ['p','l'].include?(option)
-           implement_option(option, piece, board)
+           implement_option(option, piece)
     end
   end
 
-  def implement_option(option, piece, board)
+  def implement_option(option, piece)
     piece_position = piece['position']
     piece_moves = piece['moves']
     piece_name = piece['name']

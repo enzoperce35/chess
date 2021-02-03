@@ -35,7 +35,7 @@ module Helper
     arr
   end
 
-  def locate_object(hash, object)
+  def locate_object_values(hash, object)
     hash.active_pieces.each { |key,val| object = key if val.values.include?(object) }
 
     hash.active_pieces[object]

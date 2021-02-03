@@ -4,8 +4,6 @@ require_relative 'interface.rb'
 class Player < Pieces
   attr_accessor :piece_color, :name, :active_pieces
 
-  include ConsoleInterface
-
   def initialize(piece_color)
     @piece_color = piece_color
     @name = '' #prompt_name_interface(piece_color)

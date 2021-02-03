@@ -26,7 +26,7 @@ module SideMessage
     piece_moves
   end
 
-  def active_pieces_side_message(player)
+  def create_side_message(player)
     piece_color = player.piece_color
     active_pieces = player.active_pieces
 

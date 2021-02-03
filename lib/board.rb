@@ -1,17 +1,30 @@
 require_relative 'chess_parts.rb'
 require_relative 'helper.rb'
+require_relative 'side_message.rb'
 require 'colorize'
 
 class Board
   attr_accessor :squares, :turn_player, :opposing_player
 
   include ChessParts
+  include SideMessage
   include Helper
 
   def initialize(turn_player, opposing_player)
     @turn_player = turn_player
     @opposing_player = opposing_player
     @squares = create_squares
+  end
+
+  def create_board_with_side_message(board)
+    side_message = create_side_message(turn_player)
+
+    draw_board_with_message(board, side_message)
+  end
+
+  #alter each player's 'active pieces'
+  def switch_player_pieces
+    2.times { |i| i.zero? ? alter(turn_player.active_pieces) : alter(opposing_player.active_pieces) }
   end
 
   #creates chess_board attributes in hash form
