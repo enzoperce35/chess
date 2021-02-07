@@ -2,19 +2,14 @@ require_relative 'player.rb'
 require_relative 'board.rb'
 require_relative 'helper.rb'
 
-class Chess
+class Chess < Board
   attr_accessor :turn_count, :player1, :player2, :board, :interface, :chosen_piece, :game_over, :move
 
   include Helper
 
   def initialize
     @turn_count = 1
-    @player1 = Player.new('white')
-    @player2 = Player.new('black')
     @game_over = false
-
-    player1.name = 'John'  #not included
-    player2.name = 'Mark'  #not included
   end
 
   #returns the player which will make a move
@@ -41,14 +36,14 @@ class Chess
 
   #modify 'opposing_player' values with the changes made by this turn
   def apply_changes_to_opposing_player
-    opposing_player.active_pieces.delete_if do |key,val|
+    opposing_player['active_pieces'].delete_if do |key,val|
       val['position'] == move
     end
   end
 
   #modify 'turn_player' values with the changes made by this turn
   def apply_changes_to_turn_player
-    turn_player.active_pieces.map do |key,val|
+    turn_player['active_pieces'].map do |key,val|
       next unless val == chosen_piece
 
       val['position'] = move
@@ -91,7 +86,7 @@ class Chess
 
   #displays the chess board with the list of turn player's active pieces
   def display_board_with_list_of_pieces
-    board_with_side_message = board.create_board_with_side_message(board)
+    board_with_side_message = create_board_with_side_message(board)
 
     puts board_with_side_message
   end
@@ -105,64 +100,18 @@ class Chess
 
   #alters piece positions of each player, then instantiates them to a new 'Board' class
   def prepare_board
-    board.switch_player_pieces unless turn_count == 1
+    switch_player_pieces unless turn_count == 1
 
     set_chess_board
   end
 
+  #returns true if game is over
   def game_is_over?
     @game_over == true
   end
-end
 
-#just a tester, remove unnecessary or put up pieces that is needed to test piece moves
-#tobe put anywhere inside 'chess.rb'
-#to be called on the very first line of 'start_method' of 'main.rb'
-def piece_moves_tester
-  @board = Board.new(turn_player, opposing_player)
-
-  delete_all_black
-
-  delete_all_white
-
-  place_piece('queen', 'c8', opposing_player)
-  place_piece('rook', 'g8', opposing_player)
-  place_piece('queen', 'h8', turn_player)
-end
-
-#remove all white pieces
-def delete_all_white
-  turn_player.active_pieces = {}
-end
-
-#remove all black_pieces
-def delete_all_black
-  opposing_player.active_pieces = {}
-end
-
-#creates a name, image, position values to each or either of the 'turn' or 'opposing' player's 'active_pieces'
-def place_piece(piece, index, player)
-  image = get_image(piece)
-
-  image = colorize_piece(image) if player.piece_color == 'black'
-
-  player.active_pieces.store("#{piece}1", {"name"=>"#{piece}", "image"=>image, "position"=>"#{index}", "moved?"=>false, "moves"=>[]})
-end
-
-#returns the piece image
-def get_image(piece_name)
-  case piece_name
-  when 'king'
-    " \u265A  "
-  when 'queen'
-    " \u265B  "
-  when 'bishop'
-    " \u265D  "
-  when 'rook'
-    " \u265C  "
-  when 'knight'
-    " \u265E  "
-  when 'pawn'
-    " \u265F  "
+  #sets the players and give them game values
+  def set_players
+    @player1, @player2 = Player.new.create_players
   end
 end

@@ -1,7 +1,7 @@
 require_relative 'chess.rb'
 
 class Game < Chess
-  def start
+  def start_game
     until game_is_over?
       prepare_board
 
@@ -14,8 +14,12 @@ class Game < Chess
       next_turn
     end
   end
+
+  def start
+    set_players
+
+    start_game
+  end
 end
 
-game = Game.new
-
-game.start
+Game.new.start
