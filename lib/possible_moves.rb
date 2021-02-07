@@ -148,7 +148,7 @@ class PossibleMoves
 
   #push @new_square to @possible_moves if it is occupied by opponent's square
   def log_opponent_square
-    opponent_pieces = board.opposing_player.active_pieces
+    opponent_pieces = board.opposing_player['active_pieces']
 
     opponent_pieces.each_value do |opponent|
       log_phrase = opponent['position'] + "(capture opposing #{opponent['name']})"

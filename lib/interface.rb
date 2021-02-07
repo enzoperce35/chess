@@ -6,7 +6,7 @@ class ConsoleInterface
 
   include Helper
 
-  def initialize(player, board)
+  def initialize(player = nil, board = nil)
     @player = player
     @board = board
   end
@@ -26,7 +26,7 @@ class ConsoleInterface
 
   #ask and the player's piece of choice
   def ask_for_piece
-    name = player.name
+    name = player['name']
     player_pieces = get_turn_player_pieces(board)
 
     puts "#{name}'s turn\n\n".rjust(26),

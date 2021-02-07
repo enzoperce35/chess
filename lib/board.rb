@@ -24,7 +24,7 @@ class Board
 
   #alter each player's 'active pieces'
   def switch_player_pieces
-    2.times { |i| i.zero? ? alter(turn_player.active_pieces) : alter(opposing_player.active_pieces) }
+    2.times { |i| i.zero? ? alter(turn_player['active_pieces']) : alter(opposing_player['active_pieces']) }
   end
 
   #creates chess_board attributes in hash form
@@ -61,16 +61,18 @@ class Board
   def populate_board
     2.times do |i|
       if i.zero?
-        place(opposing_player.active_pieces)
+        place(opposing_player['active_pieces'])
       else
-        place(turn_player.active_pieces)
+        place(turn_player['active_pieces'])
       end
     end
   end
 
-  def place(player_pieces)
-    player_pieces.values.each do |player_piece|
+  def place(player_piece)
+    player_piece.values.each do |player_piece|
       piece, image, position = player_piece.values
+
+      image = " " + image + "  "
 
       square = @squares[position]
 

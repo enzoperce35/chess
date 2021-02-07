@@ -22,23 +22,23 @@ module Helper
 
   #returns an array of opposing player's piece positions
   def get_opposing_pieces(board, arr = [])
-    board.opposing_player.active_pieces.each_value do |val|
+    board.opposing_player['active_pieces'].each_value do |val|
       arr << val['position']
     end
     arr
   end
 
   def get_turn_player_pieces(board, arr = [])
-    board.turn_player.active_pieces.each_value do |val|
+    board.turn_player['active_pieces'].each_value do |val|
       arr << val['position']
     end
     arr
   end
 
   def locate_object_values(hash, object)
-    hash.active_pieces.each { |key,val| object = key if val.values.include?(object) }
+    hash['active_pieces'].each { |key,val| object = key if val.values.include?(object) }
 
-    hash.active_pieces[object]
+    hash['active_pieces'][object]
   end
 
   def convert_to_string(squares, str = '')

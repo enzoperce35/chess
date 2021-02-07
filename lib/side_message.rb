@@ -27,8 +27,8 @@ module SideMessage
   end
 
   def create_side_message(player)
-    piece_color = player.piece_color
-    active_pieces = player.active_pieces
+    piece_color = player['piece_color']
+    active_pieces = player['active_pieces']
 
     items = create_list_items(active_pieces)
 
