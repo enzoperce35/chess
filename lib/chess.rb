@@ -115,5 +115,3 @@ class Chess < Board
     @player1, @player2 = Player.new.create_players
   end
 end
-
-#test
