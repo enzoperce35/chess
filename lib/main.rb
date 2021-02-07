@@ -1,5 +1,6 @@
 require_relative 'chess.rb'
 
+# controls the application
 class Game < Chess
   def start_game
     until game_is_over?
