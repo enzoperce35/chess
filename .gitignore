@@ -1,5 +1,6 @@
 spec/spec_helper.rb
 .rspec
+.rubocop.yml
 algorithm.txt
 testing.rb
 Project Challenges.rb
