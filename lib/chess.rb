@@ -34,14 +34,14 @@ class Chess < Board
     select_move
   end
 
-  #modify 'opposing_player' values with the changes made by this turn
+  #modify 'opposing_player' attributes with the changes made by this turn
   def apply_changes_to_opposing_player
     opposing_player['active_pieces'].delete_if do |key,val|
       val['position'] == move
     end
   end
 
-  #modify 'turn_player' values with the changes made by this turn
+  #modify 'turn_player' attributes with the changes made by this turn
   def apply_changes_to_turn_player
     turn_player['active_pieces'].map do |key,val|
       next unless val == chosen_piece
@@ -54,7 +54,7 @@ class Chess < Board
     end
   end
 
-  #alter the pieces' positions then use those to instantiate 'Board'; re-assign to @board
+  #alter the pieces' positions then use those to instantiate 'Board'; assign to '@board'
   def apply_move
     apply_changes_to_turn_player
 
@@ -110,7 +110,7 @@ class Chess < Board
     @game_over == true
   end
 
-  #sets the players and give them game values
+  #sets the players with attribute
   def set_players
     @player1, @player2 = Player.new.create_players
   end
