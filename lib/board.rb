@@ -13,7 +13,6 @@ class Board
   def initialize(turn_player, opposing_player)
     @turn_player = turn_player
     @opposing_player = opposing_player
-    @squares = create_squares
   end
 
   def create_board_with_side_message(board)
