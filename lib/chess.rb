@@ -4,7 +4,8 @@ require_relative 'helper.rb'
 
 # this is the application's framework
 class Chess < Board
-  attr_accessor :turn_count, :player1, :player2, :board, :interface, :chosen_piece, :game_over, :move
+  attr_accessor :turn_count, :player1, :player2, :board,
+                :interface, :chosen_piece, :game_over, :move
 
   include Helper
 
@@ -61,7 +62,7 @@ class Chess < Board
 
     apply_changes_to_opposing_player
 
-    @board = Board.new(turn_player, opposing_player)
+    save_board_and_player_changes
   end
 
   # returns true if the input does not have the following words
@@ -92,18 +93,35 @@ class Chess < Board
     puts board_with_side_message
   end
 
-  # sets the new state of the chess board
-  def set_chess_board
-    @board = Board.new(turn_player, opposing_player)
-
+  # insert chess piece images into the board squares
+  def put_in_the_chess_pieces
     board.populate_board
   end
 
-  # alters piece positions of each player, then instantiates them to a new 'Board' class
-  def prepare_board
-    switch_player_pieces unless turn_count == 1
+  # creates a hash of the chess board's squares
+  def set_an_empty_chess_board
+    @board.squares = create_squares
+  end
 
-    set_chess_board
+  # instantiate players' values
+  def save_board_and_player_changes
+    @board = Board.new(turn_player, opposing_player)
+  end
+
+  # alters the players' piece positions on the board
+  def switch_player_sides
+    switch_player_pieces unless turn_count == 1
+  end
+
+  # sets the new state of the chess board
+  def prepare_chess_board
+    switch_player_sides
+
+    save_board_and_player_changes
+
+    set_an_empty_chess_board
+
+    put_in_the_chess_pieces
   end
 
   # returns true if game is over

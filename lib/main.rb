@@ -4,7 +4,7 @@ require_relative 'chess.rb'
 class Game < Chess
   def start_game
     until game_is_over?
-      prepare_board
+      prepare_chess_board
 
       display_board_with_list_of_pieces
 
