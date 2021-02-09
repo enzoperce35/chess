@@ -26,28 +26,26 @@ class Board
     2.times { |i| i.zero? ? alter(turn_player['active_pieces']) : alter(opposing_player['active_pieces']) }
   end
 
-  #creates chess_board attributes in hash form
-  def create_squares(hash = {}, square = 0, col_index = 9)
-    return hash if square == 64
+  def create_a_square(row_index, col_index)
+    empty_square = "    "
 
-    row_index = square % 8
-    col_index -= 1 if row_index.zero?
-
-    convert_to_board_position([row_index, col_index])
-
-    insert_to_hash(hash, row_index, col_index)
-
-
-    create_squares(hash, square += 1, col_index)
+    colorize_square(empty_square, row_index + 1, col_index)
   end
 
-  def insert_to_hash(hash, row_index, col_index)
+  #creates chess_board attributes in hash form
+  def create_squares(hash = {}, col_index = 9)
+    64.times do |i|
+      row_index = i % 8
 
-    square = colorize_square("    ", col_index, row_index+1)
+      col_index -= 1 if row_index.zero?
 
-    square_position = convert_to_board_position([row_index, col_index])
+      square = create_a_square(row_index, col_index)
 
-    hash.store(square_position, { 'square'=>square, 'col_ind'=>col_index, 'row_ind'=>row_index+1 })
+      square_position = convert_to_board_position([row_index, col_index])
+
+      hash.store(square_position, { 'square'=>square, 'col_ind'=>col_index, 'row_ind'=>row_index+1 })
+    end
+    hash
   end
 
   def colorize_square(square, y_coor, x_coor)
