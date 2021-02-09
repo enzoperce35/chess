@@ -9,7 +9,7 @@ module Helper
 
     row_index, column_index = coordinates
 
-    alpha[row_index] + column_index.to_s
+    alpha[row_index-1] + column_index.to_s
   end
 
   def convert_to_board_coordinates(position)
@@ -77,5 +77,10 @@ module Helper
 
   def colorize_piece(image)
     image.colorize(color: :black)
+  end
+
+  #
+  def customize_row_index(row_index)
+    row_index += 1
   end
 end
