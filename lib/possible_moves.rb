@@ -23,7 +23,7 @@ class PossibleMoves
 
     square = board.squares[piece_position]
 
-    square['row_ind'] - 1
+    square['row_ind']
   end
 
   def get_col_index
