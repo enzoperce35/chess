@@ -4,7 +4,7 @@ require_relative 'side_message.rb'
 require 'colorize'
 
 class Board
-  attr_accessor :squares, :turn_player, :opposing_player
+  attr_accessor :squares, :turn_player, :opposing_player, :row_index, :col_index
 
   include ChessParts
   include SideMessage
@@ -26,33 +26,39 @@ class Board
     2.times { |i| i.zero? ? alter(turn_player['active_pieces']) : alter(opposing_player['active_pieces']) }
   end
 
-  def create_a_square(row_index, col_index)
+  def create_a_square
     empty_square = "    "
 
-    colorize_square(empty_square, row_index + 1, col_index)
+    colorize_square(empty_square, row_index, col_index)
+  end
+
+  def create_coordinates(i)
+    quotient, remainder = i.divmod(8)
+
+    @row_index = customize_row_index(remainder)
+
+    @col_index = 8 - quotient
   end
 
   #creates chess_board attributes in hash form
-  def create_squares(hash = {}, col_index = 9)
+  def create_squares(hash = {})
     64.times do |i|
-      row_index = i % 8
+      create_coordinates(i)
 
-      col_index -= 1 if row_index.zero?
-
-      square = create_a_square(row_index, col_index)
+      square = create_a_square
 
       square_position = convert_to_board_position([row_index, col_index])
 
-      hash.store(square_position, { 'square'=>square, 'col_ind'=>col_index, 'row_ind'=>row_index+1 })
+      hash.store(square_position, { 'square'=>square, 'col_ind'=>col_index, 'row_ind'=>row_index })
     end
     hash
   end
 
-  def colorize_square(square, y_coor, x_coor)
-    if y_coor.odd?
-       x_coor.odd? ? square.colorize(background: :light_black) : square.colorize(background: :light_cyan)
+  def colorize_square(square, x_coor, y_coor)
+    if x_coor.odd?
+       y_coor.odd? ? square.colorize(background: :light_black) : square.colorize(background: :light_cyan)
     else
-       x_coor.odd? ? square.colorize(background: :light_cyan) : square.colorize(background: :light_black)
+       y_coor.odd? ? square.colorize(background: :light_cyan) : square.colorize(background: :light_black)
     end
   end
 
