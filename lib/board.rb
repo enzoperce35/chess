@@ -27,25 +27,27 @@ class Board
   end
 
   #creates chess_board attributes in hash form
-  def create_squares(hash = {}, square = 0)
+  def create_squares(hash = {}, square = 0, col_index = 9)
     return hash if square == 64
 
-    index1,index2 = square.divmod(8)
+    row_index = square % 8
+    col_index -= 1 if row_index.zero?
 
-    insert_to_hash(hash, square, index1, index2, ('a'..'h').to_a)
+    convert_to_board_position([row_index, col_index])
 
-    create_squares(hash, square += 1)
+    insert_to_hash(hash, row_index, col_index)
+
+
+    create_squares(hash, square += 1, col_index)
   end
 
-  def insert_to_hash(hash, square, index1, index2, alphabet)
-    row_index = index2 + 1
+  def insert_to_hash(hash, row_index, col_index)
 
-    x_coor = alphabet[index2]
-    y_coor = (index1-8).abs
+    square = colorize_square("    ", col_index, row_index+1)
 
-    square = colorize_square("    ", y_coor, row_index)
+    square_position = convert_to_board_position([row_index, col_index])
 
-    hash.store("#{x_coor}#{y_coor}", { 'square'=>square, 'col_ind'=>y_coor, 'row_ind'=>row_index })
+    hash.store(square_position, { 'square'=>square, 'col_ind'=>col_index, 'row_ind'=>row_index+1 })
   end
 
   def colorize_square(square, y_coor, x_coor)
