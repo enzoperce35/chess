@@ -41,6 +41,10 @@ module Helper
     hash['active_pieces'][object]
   end
 
+  def new_space
+    " \n"
+  end
+
   def convert_to_string(squares, str = '')
     squares.values.each do |square|
       sqr_image = square['square']
@@ -75,11 +79,23 @@ module Helper
     trimmed_items
   end
 
+  def adjust_string(string, direction, index)
+    case direction
+    when 'left'
+      string.ljust(index)
+    when 'right'
+      string.rjust(index)
+    end
+  end
+
+  def remove_piece_name_suffix(piece_name)
+    piece_name.tr("0-9", "")
+  end
+
   def colorize_piece(image)
     image.colorize(color: :black)
   end
 
-  #
   def customize_row_index(row_index)
     row_index += 1
   end
