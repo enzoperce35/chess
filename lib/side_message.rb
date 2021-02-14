@@ -1,39 +1,14 @@
 require_relative 'helper.rb'
 
+# creates the extra information attached to the right side of the chess board
 class SideMessage
-  attr_accessor :player_name, :piece_color, :active_pieces, :message_items, :message_lines
+  attr_accessor :piece_color, :active_pieces, :message_items, :message_lines
 
   include Helper
 
   def initialize(turn_player)
-    @player_name = turn_player['name']
     @piece_color = turn_player['piece_color']
     @active_pieces = turn_player['active_pieces']
-  end
-
-
-
-
-
-  def modify(piece_moves)
-    piece_moves.map! { |move| "   " + move}
-
-    piece_moves
-  end
-
-
-
-  def possible_moves_side_message(piece)
-    piece_name = piece['name']
-    piece_position = piece['position']
-    piece_moves = piece['moves']
-
-    items = modify(piece_moves)
-
-    upper_line = ["'#{piece_name.upcase} #{piece_position.upcase}' MOVES".rjust(26)]
-    body_lines = create_message_lines(piece_moves)
-
-    upper_line + body_lines
   end
 
   # returns an array of string converted message lines with white spaces removed to it's right side
@@ -56,7 +31,7 @@ class SideMessage
 
   # initializes an array of six empty arrays to contain the message lines
   def create_message_lines_container
-    @message_lines = Array.new(6) { Array.new }
+    @message_lines = Array.new(6) { [] }
   end
 
   # creates the message lines
@@ -86,11 +61,11 @@ class SideMessage
 
       piece_name = remove_piece_name_suffix(piece_name)
 
-      white_space = ' '
+      blank_space = ' '
 
       piece_position = attribute['position']
 
-      piece =  margin + piece_name + white_space + piece_position
+      piece = margin + piece_name + blank_space + piece_position
 
       @message_items << piece
     end
