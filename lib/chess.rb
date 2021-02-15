@@ -1,4 +1,3 @@
-require_relative 'player.rb'
 require_relative 'board.rb'
 require_relative 'helper.rb'
 
@@ -9,7 +8,9 @@ class Chess < Board
 
   include Helper
 
-  def initialize
+  def initialize(player1, player2)
+    @player1 = player1
+    @player2 = player2
     @turn_count = 1
     @game_over = false
   end
@@ -129,8 +130,18 @@ class Chess < Board
     @game_over == true
   end
 
-  # sets the players with attribute
-  def set_players
-    @player1, @player2 = Player.new.create_players
+  # make player turns until game is over
+  def play
+    until game_is_over?
+      prepare_chess_board
+
+      display_board_with_list_of_pieces
+
+      select_piece
+
+      select_move
+
+      next_turn
+    end
   end
 end
