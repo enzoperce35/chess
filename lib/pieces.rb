@@ -56,7 +56,7 @@ class Pieces
 
     encoded_image = encode(piece_image)
 
-    @piece_image = piece_color == 'black' ? colorize_piece(encoded_image) : encoded_image
+    @piece_image = piece_color == 'black' ? put_colour_to(encoded_image, piece_color) : encoded_image
   end
 
   # returns true if current and previous 'piece_name' is identical
