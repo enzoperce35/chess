@@ -1,10 +1,10 @@
 require_relative 'helper.rb'
 require_relative 'side_message.rb'
-require 'colorize'
 
+# creates and displays the chess board
 class Board
-  attr_accessor :squares_hash, :turn_player, :opposing_player, :row_index, :col_index,
-                :piece_image, :side_message, :squares_string
+  attr_accessor :squares_hash, :turn_player, :opposing_player, :row_index,
+                :col_index, :piece_image, :side_message, :squares_string
 
   include Helper
 
@@ -34,7 +34,7 @@ class Board
     side_message.each do |line|
       index = squares_string.index(" \n")
 
-      @squares_string = squares_string.insert(index+1, line)
+      @squares_string = squares_string.insert(index + 1, line)
     end
   end
 
@@ -90,17 +90,15 @@ class Board
   # gives the color to board squares
   def colorize_square(square)
     if both_indexes_are_on_the_same_parity?
-      square.colorize(background: :blue)
+      put_background_color(square, 'blue')
     else
-      square.colorize(background: :light_black)
+      put_background_color(square, 'light_black')
     end
   end
 
   # gives a new value for row and col index board attributes
   def utilize_empty_square_attributes(empty_square)
-    @col_index = empty_square['col_ind']
-
-    @row_index = empty_square['row_ind']
+    _square, @col_index, @row_index = empty_square.values
   end
 
   # replace @square['square'] with a colorized and chess piece inserted square
@@ -112,7 +110,7 @@ class Board
 
   # insert the chess piece's image into an empty square
   def put_image_in_an_empty_square(image)
-    empty_square = "   "
+    empty_square = '   '
 
     empty_square.insert(1, image)
   end
@@ -146,14 +144,14 @@ class Board
 
   # returns a colorized empty square
   def create_an_empty_square
-    empty_square = "    "
+    empty_square = '    '
 
     colorize_square(empty_square)
   end
 
   # gives new value for row and col index board attributes
-  def create_board_coordinates(i)
-    quotient, remainder = i.divmod(8)
+  def create_board_coordinates(iteration)
+    quotient, remainder = iteration.divmod(8)
 
     @row_index = customize_row_index(remainder)
 
@@ -169,12 +167,12 @@ class Board
 
       square_position = convert_to_board_position([row_index, col_index])
 
-      hash.store(square_position, { 'square'=>board_square, 'col_ind'=>col_index, 'row_ind'=>row_index })
+      hash.store(square_position, { 'square' => board_square, 'col_ind' => col_index, 'row_ind' => row_index })
     end
     hash
   end
 
-  #alter each player's 'active pieces'
+  # alter each player's 'active pieces'
   def switch_player_piece_positions
     2.times { |i| i.zero? ? alter(turn_player['active_pieces']) : alter(opposing_player['active_pieces']) }
   end
