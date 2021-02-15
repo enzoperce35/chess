@@ -5,10 +5,10 @@ require 'colorize'
 
 class Board
   attr_accessor :squares, :turn_player, :opposing_player, :row_index, :col_index,
-                :piece_image
+                :piece_image, :side_message, :squares_string
 
   include ChessParts
-  include SideMessage
+  #include SideMessage
   include Helper
 
   def initialize(turn_player, opposing_player)
@@ -16,18 +16,10 @@ class Board
     @opposing_player = opposing_player
   end
 
-  def create_board_with_side_message(board)
-    side_message = create_side_message(turn_player)
-
-    draw_board_with_message(board, side_message)
-  end
-
   #alter each player's 'active pieces'
   def switch_player_pieces
     2.times { |i| i.zero? ? alter(turn_player['active_pieces']) : alter(opposing_player['active_pieces']) }
   end
-
-
 
   def alter_opposing_pieces(pieces)
     pieces.values.map do |value|
@@ -37,25 +29,75 @@ class Board
     pieces.values
   end
 
-  #displays the board with a message by converting hash into a string
-  def draw_board_with_message(board, message)
-    squares_hash = board.squares
-    board_string = convert_to_string(squares_hash)
+  # adds new line strings to the top and bottom of @squares_string
+  def add_spacings_to_squares_string
+    @squares_string = add_top_spacing(squares_string, 2)
 
-    message.each do |line|
-      index = board_string.index(" \n")
-      board_string = board_string.insert(index+1, line)
+    @squares_string = add_bottom_spacing(squares_string, 2)
+  end
+
+  # attaches a string representing the x_coordinates to @squares string
+  def attach_x_coordinates_to_square_string
+    x_coords = ('   a'..'   h').to_a.join
+
+    x_coordinates = put_colour_to(x_coords, 'red')
+
+    @squares_string += x_coordinates
+  end
+
+  # inserts each side message lines into @squares_string
+  def attach_the_side_messages_to_squares_string
+    side_message.each do |line|
+      index = squares_string.index(" \n")
+
+      @squares_string = squares_string.insert(index+1, line)
     end
-
-    board_string
   end
 
-  def y_coordinate(col_index)
-    "#{col_index} ".colorize(color: :red)
+  # returns a colored integer with a space to it's right side
+  def add_y_coordinate(col_index)
+    y_coord = put_colour_to(col_index.to_s, 'red')
+
+    y_coord + ' '
   end
 
-  def new_space
-    " \n"
+  # convert @squares into string then assign the product to @squares_string
+  def convert_squares_hash_into_squares_string(str = '')
+    squares_hash = squares
+
+    squares_hash.values.each do |square|
+      sqr_image, col_index, row_index = square.values
+
+      str += add_y_coordinate(col_index) if row_index == 1
+
+      str += sqr_image
+
+      str += add_new_line if row_index == 8
+    end
+    @squares_string = str
+  end
+
+  # alters and joins @squares and @side_message values to build a value for @squares_string
+  def draw_the_chess_board_with_side_message
+    convert_squares_hash_into_squares_string
+
+    attach_the_side_messages_to_squares_string
+
+    attach_x_coordinates_to_square_string
+
+    add_spacings_to_squares_string
+  end
+
+  # creates the message to be attached beside the chess board
+  def create_the_side_message
+    @side_message = SideMessage.new(turn_player).create_side_message
+  end
+
+  # creates a string equal to a message guided chess board
+  def create_board_with_side_message
+    create_the_side_message
+
+    draw_the_chess_board_with_side_message
   end
 
   # returns true if index are both even or both odd
