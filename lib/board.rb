@@ -1,32 +1,16 @@
-require_relative 'chess_parts.rb'
 require_relative 'helper.rb'
 require_relative 'side_message.rb'
 require 'colorize'
 
 class Board
-  attr_accessor :squares, :turn_player, :opposing_player, :row_index, :col_index,
+  attr_accessor :squares_hash, :turn_player, :opposing_player, :row_index, :col_index,
                 :piece_image, :side_message, :squares_string
 
-  include ChessParts
-  #include SideMessage
   include Helper
 
   def initialize(turn_player, opposing_player)
     @turn_player = turn_player
     @opposing_player = opposing_player
-  end
-
-  #alter each player's 'active pieces'
-  def switch_player_pieces
-    2.times { |i| i.zero? ? alter(turn_player['active_pieces']) : alter(opposing_player['active_pieces']) }
-  end
-
-  def alter_opposing_pieces(pieces)
-    pieces.values.map do |value|
-      value['position'][-1] = (value['position'][-1].to_i - 9).abs.to_s
-    end
-
-    pieces.values
   end
 
   # adds new line strings to the top and bottom of @squares_string
@@ -61,10 +45,8 @@ class Board
     y_coord + ' '
   end
 
-  # convert @squares into string then assign the product to @squares_string
+  # convert @squares_hash into @squares_string
   def convert_squares_hash_into_squares_string(str = '')
-    squares_hash = squares
-
     squares_hash.values.each do |square|
       sqr_image, col_index, row_index = square.values
 
@@ -137,7 +119,7 @@ class Board
 
   # locate board square with the guide of the chess piece's position
   def locate_board_square(position)
-    @squares[position]
+    @squares_hash[position]
   end
 
   # find and replace empty squares with chess piece filled squares
@@ -190,5 +172,10 @@ class Board
       hash.store(square_position, { 'square'=>board_square, 'col_ind'=>col_index, 'row_ind'=>row_index })
     end
     hash
+  end
+
+  #alter each player's 'active pieces'
+  def switch_player_piece_positions
+    2.times { |i| i.zero? ? alter(turn_player['active_pieces']) : alter(opposing_player['active_pieces']) }
   end
 end

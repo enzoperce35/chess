@@ -100,7 +100,7 @@ class Chess < Board
 
   # creates a hash of the chess board's squares
   def set_an_empty_chess_board
-    @board.squares = create_squares
+    @board.squares_hash = create_squares
   end
 
   # instantiate players' values
@@ -110,7 +110,7 @@ class Chess < Board
 
   # alters the players' piece positions on the board
   def switch_player_sides
-    switch_player_pieces unless turn_count == 1
+    switch_player_piece_positions unless turn_count == 1
   end
 
   # sets the new state of the chess board

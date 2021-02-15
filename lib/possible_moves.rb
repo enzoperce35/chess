@@ -21,7 +21,7 @@ class PossibleMoves
   def get_row_index
     piece_position = piece['position']
 
-    square = board.squares[piece_position]
+    square = board.squares_hash[piece_position]
 
     square['row_ind']
   end
@@ -29,7 +29,7 @@ class PossibleMoves
   def get_col_index
     piece_position = piece['position']
 
-    square = board.squares[piece_position]
+    square = board.squares_hash[piece_position]
 
     square['col_ind']
   end
@@ -96,19 +96,19 @@ class PossibleMoves
   end
 
   def piece_is_on_upper_border?
-    board.squares[new_square]['col_ind'] == 8
+    board.squares_hash[new_square]['col_ind'] == 8
   end
 
   def piece_is_on_lower_border?
-    board.squares[new_square]['col_ind'] == 1
+    board.squares_hash[new_square]['col_ind'] == 1
   end
 
   def piece_is_on_right_border?
-    board.squares[new_square]['row_ind'] == 8
+    board.squares_hash[new_square]['row_ind'] == 8
   end
 
   def piece_is_on_left_border?
-    board.squares[new_square]['row_ind'] == 1
+    board.squares_hash[new_square]['row_ind'] == 1
   end
 
   def out_of_border?(coordinates)
@@ -141,7 +141,7 @@ class PossibleMoves
   def square_is_occupied?
     return false if new_square == piece['position']
 
-    square = board.squares[new_square]
+    square = board.squares_hash[new_square]
 
     !square['square'].include?('    ')
   end

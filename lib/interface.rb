@@ -46,7 +46,7 @@ class ConsoleInterface
 
     piece_moves = piece['moves']
 
-    all_squares = board.squares.keys
+    all_squares = board.squares_hash.keys
 
     return "\n\n\nNo possible moves for '#{piece_name}-#{piece_position}'!\n"\
            "Please choose another piece" if piece_moves.length.zero?
