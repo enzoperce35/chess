@@ -104,6 +104,10 @@ module Helper
     item.colorize(color: :"#{color}")
   end
 
+  def put_background_color(str, color)
+    str.colorize(background: :"#{color}")
+  end
+
   def customize_row_index(row_index)
     row_index += 1
   end
