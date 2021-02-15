@@ -88,7 +88,7 @@ class Chess < Board
 
   # displays the chess board with the list of turn player's active pieces
   def display_board_with_list_of_pieces
-    board_with_side_message = create_board_with_side_message(board)
+    board_with_side_message = board.create_board_with_side_message
 
     puts board_with_side_message
   end
