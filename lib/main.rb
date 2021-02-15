@@ -1,19 +1,16 @@
+require_relative 'player.rb'
 require_relative 'chess.rb'
 
 # controls the application
-class Game < Chess
+class Game
+  attr_reader :player1, :player2
+
+  def set_players
+    @player1, @player2 = Player.new.create_players
+  end
+
   def start_game
-    until game_is_over?
-      prepare_chess_board
-
-      display_board_with_list_of_pieces
-
-      select_piece
-
-      select_move
-
-      next_turn
-    end
+    Chess.new(player1, player2).play
   end
 
   def start
