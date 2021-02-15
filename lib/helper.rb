@@ -41,8 +41,8 @@ module Helper
     hash['active_pieces'][object]
   end
 
-  def new_space
-    " \n"
+  def add_new_line(count = 1)
+    " \n" * 1
   end
 
   def convert_to_string(squares, str = '')
@@ -79,6 +79,14 @@ module Helper
     trimmed_items
   end
 
+  def add_top_spacing(string, count = 0)
+    ("\n" * count) + string unless count <= 0
+  end
+
+  def add_bottom_spacing(string, count = 0)
+    string + ("\n" * count) unless count <= 0
+  end
+
   def adjust_string(string, direction, index)
     case direction
     when 'left'
@@ -92,8 +100,8 @@ module Helper
     piece_name.tr("0-9", "")
   end
 
-  def colorize_piece(image)
-    image.colorize(color: :black)
+  def put_colour_to(item, color)
+    item.colorize(color: :"#{color}")
   end
 
   def customize_row_index(row_index)
