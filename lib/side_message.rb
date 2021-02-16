@@ -49,7 +49,7 @@ class SideMessage
 
     centered_message_header = adjust_string(message_header, 'right', 26)
 
-    Array.new { centered_message_header }
+    Array.new(1) { centered_message_header }
   end
 
   # creates and populate an array with the message items
