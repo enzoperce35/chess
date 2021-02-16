@@ -98,7 +98,9 @@ class Board
 
   # gives a new value for row and col index board attributes
   def utilize_empty_square_attributes(empty_square)
-    _square, @col_index, @row_index = empty_square.values
+    @col_index = empty_square['col_ind']
+
+    @row_index = empty_square['row_ind']
   end
 
   # replace @square['square'] with a colorized and chess piece inserted square
