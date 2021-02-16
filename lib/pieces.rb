@@ -1,4 +1,3 @@
-require_relative 'chess_parts.rb'
 require_relative 'helper.rb'
 require 'colorize'
 
@@ -7,7 +6,6 @@ class Pieces
   attr_accessor :piece_set, :line, :piece_name, :piece_image, :x_coordinate,
                 :y_coordinate, :prev_piece_name, :piece_suffix, :piece_color
 
-  include ChessParts
   include Helper
 
   def initialize(piece_color)
