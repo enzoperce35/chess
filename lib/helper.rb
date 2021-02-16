@@ -1,8 +1,4 @@
-require_relative 'chess_parts.rb'
-
 module Helper
-
-  include ChessParts
 
   def convert_to_board_position(coordinates)
     alpha = ('a'..'h').to_a
@@ -45,21 +41,6 @@ module Helper
     " \n" * 1
   end
 
-  def convert_to_string(squares, str = '')
-    squares.values.each do |square|
-      sqr_image = square['square']
-      row_index = square['row_ind']
-      col_index = square['col_ind']
-
-      str += y_coordinate(col_index) if row_index == 1
-
-      str += sqr_image
-
-      str += new_space if row_index == 8
-    end
-    ("\n"*2) + str + X_COORDINATES.colorize(color: :red) + ("\n"*2)
-  end
-
   def alter(pieces)
     alpha = ('a'..'h').to_a
     pieces.values.map do |value|
@@ -87,12 +68,13 @@ module Helper
     string + ("\n" * count) unless count <= 0
   end
 
-  def adjust_string(string, direction, index)
+  # adjusts the string to the left-most or right-most of the string_size extended string
+  def adjust_string(string, direction, string_size)
     case direction
     when 'left'
-      string.ljust(index)
+      string.ljust(string_size)
     when 'right'
-      string.rjust(index)
+      string.rjust(string_size)
     end
   end
 
