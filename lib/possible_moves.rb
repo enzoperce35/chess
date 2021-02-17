@@ -171,7 +171,7 @@ class PossibleMoves
 
   #assign converted board coordinates to @new_square then push to @possible_moves
   def log_coordinates(coordinates)
-    @new_square = convert_to_board_position(coordinates)
+    @new_square = convert_to_piece_position(coordinates)
 
     log_new_square
   end
@@ -234,7 +234,7 @@ class PossibleMoves
   def generate_knight_moves
     altered_coordinates = alter_knight_coordinates(get_row_index, get_col_index)
 
-    knight_moves = altered_coordinates.map { |coords| convert_to_board_position(coords) }
+    knight_moves = altered_coordinates.map { |coords| convert_to_piece_position(coords) }
 
     log_knight_moves(knight_moves)
 
