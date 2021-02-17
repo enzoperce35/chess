@@ -8,15 +8,41 @@ class Pieces
 
   include Helper
 
-  def initialize(piece_color)
+  def initialize(piece_color = nil)
     @piece_set = {}
     @piece_color = piece_color
     @prev_piece_name = ''
   end
 
+  # returns an array of altered board coordinates
+  def alter_board_coordinate(board_coordinate)
+    x_coord, y_coord = board_coordinate
+
+    x_coord = (8 - x_coord).abs
+
+    y_coord = (9 - y_coord).abs
+
+    [x_coord, y_coord]
+  end
+
+  # alters pieces positions, white pieces are on the top side by default
+  def alter_pieces_position(player_pieces)
+    player_pieces.values.map do |value|
+      piece_position = value['position']
+
+      board_coordinate = convert_to_board_coordinates(piece_position)
+
+      altered_board_coordinate = alter_board_coordinate(board_coordinate)
+
+      altered_piece_position = convert_to_piece_position(altered_board_coordinate)
+
+      value['position'] = altered_piece_position
+    end
+  end
+
   # store key and modified value pairs to '@piece_set'
   def store_piece
-    value = { 'name' => piece_name[0..-2],
+    value = { 'name' => remove_piece_name_suffix(piece_name),
               'image' => piece_image,
               'position' => "#{x_coordinate}#{y_coordinate}",
               'moved?' => false,
@@ -32,13 +58,13 @@ class Pieces
     @x_coordinate = x_coord.chomp!
   end
 
-  # alter the y_coordinate if '@piece_color' is black
+  # alter the y_coordinate if '@piece_color' is white
   def modify_y_coordinate
     y_coord = line[2]
 
-    y_coord_for_black_piece = (9 - y_coord.to_i).to_s
+    y_coord_for_white_piece = (9 - y_coord.to_i).to_s
 
-    @y_coordinate = piece_color == 'black' ? y_coord_for_black_piece : y_coord
+    @y_coordinate = piece_color == 'white' ? y_coord_for_white_piece : y_coord
   end
 
   # returns a console compatible string formatted 'piece_image'
