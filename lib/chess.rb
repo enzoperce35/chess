@@ -1,4 +1,5 @@
 require_relative 'board.rb'
+require_relative 'pieces.rb'
 require_relative 'helper.rb'
 
 # this is the application's framework
@@ -109,14 +110,18 @@ class Chess < Board
     @board = Board.new(turn_player, opposing_player)
   end
 
-  # alters the players' piece positions on the board
-  def switch_player_sides
-    switch_player_piece_positions unless turn_count == 1
+  # puts the top side pieces to the bottom side and the bottom side pieces to the top side
+  def switch_board_sides
+    2.times do |i|
+      player_pieces = i.zero? ? turn_player['active_pieces'] : opposing_player['active_pieces']
+
+      Pieces.new.alter_pieces_position(player_pieces)
+    end
   end
 
   # sets the new state of the chess board
   def prepare_chess_board
-    switch_player_sides
+    switch_board_sides
 
     save_board_and_player_changes
 
