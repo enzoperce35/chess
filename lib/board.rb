@@ -167,15 +167,10 @@ class Board
 
       board_square = create_an_empty_square
 
-      square_position = convert_to_board_position([row_index, col_index])
+      piece_position = convert_to_piece_position([row_index, col_index])
 
-      hash.store(square_position, { 'square' => board_square, 'col_ind' => col_index, 'row_ind' => row_index })
+      hash.store(piece_position, { 'square' => board_square, 'col_ind' => col_index, 'row_ind' => row_index })
     end
     hash
-  end
-
-  # alter each player's 'active pieces'
-  def switch_player_piece_positions
-    2.times { |i| i.zero? ? alter(turn_player['active_pieces']) : alter(opposing_player['active_pieces']) }
   end
 end
