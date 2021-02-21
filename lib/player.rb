@@ -12,7 +12,7 @@ class Player
 
   # gets the name of the player
   def ask_for_player_name
-    # ConsoleInterface.new.prompt_name_interface(piece_color)
+    #@player_name = ConsoleInterface.new.ask_player_name_for(piece_color)
     @player_name = iteration.zero? ? 'John' : 'Mark' # not included
   end
 
@@ -26,9 +26,9 @@ class Player
     2.times do |i|
       @iteration = i
 
-      ask_for_player_name
-
       assign_color_to_the_player
+
+      ask_for_player_name
 
       create_piece_set_for_the_player
 

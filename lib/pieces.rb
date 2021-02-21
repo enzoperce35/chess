@@ -25,7 +25,7 @@ class Pieces
     [x_coord, y_coord]
   end
 
-  # alters pieces positions, white pieces are on the top side by default
+  # alters pieces position by converting coordinates and piece position values
   def alter_pieces_position(player_pieces)
     player_pieces.values.map do |value|
       piece_position = value['position']
@@ -65,13 +65,6 @@ class Pieces
     y_coord_for_white_piece = (9 - y_coord.to_i).to_s
 
     @y_coordinate = piece_color == 'white' ? y_coord_for_white_piece : y_coord
-  end
-
-  # returns a console compatible string formatted 'piece_image'
-  def encode(image)
-    image.gsub!('U+', '\u')
-
-    image.gsub(/\\u[\da-f]{4}/i) { |m| [m[-4..-1].to_i(16)].pack('U') }
   end
 
   # modifies a unicode formatted 'piece_image'; colorize if '@piece_color' is black
@@ -118,7 +111,7 @@ class Pieces
   end
 
   # splits a line from the csv file
-  def split_line(line)
+  def split_csv_line(line)
     @line = line.split(',')
   end
 
@@ -134,7 +127,7 @@ class Pieces
     lines.each_with_index do |line, index|
       next if index.zero?
 
-      split_line(line)
+      split_csv_line(line)
 
       modify_line
 

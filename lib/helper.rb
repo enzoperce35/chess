@@ -1,20 +1,6 @@
 module Helper
 
-  def convert_to_board_position(coordinates)
-    alpha = ('a'..'h').to_a
 
-    row_index, column_index = coordinates
-
-    alpha[row_index-1] + column_index.to_s
-  end
-
-  def convert_to_board_coordinates(position)
-    alpha = ('a'..'h').to_a
-
-    x_coordinate, y_coordinate = position.split('')
-
-    [alpha.index(x_coordinate), y_coordinate.to_i]
-  end
 
   #returns an array of opposing player's piece positions
   def get_opposing_pieces(board, arr = [])
@@ -24,22 +10,7 @@ module Helper
     arr
   end
 
-  def get_turn_player_pieces(board, arr = [])
-    board.turn_player['active_pieces'].each_value do |val|
-      arr << val['position']
-    end
-    arr
-  end
 
-  def locate_object_values(hash, object)
-    hash['active_pieces'].each { |key,val| object = key if val.values.include?(object) }
-
-    hash['active_pieces'][object]
-  end
-
-  def add_new_line(count = 1)
-    " \n" * 1
-  end
 
   def alter(pieces)
     alpha = ('a'..'h').to_a
@@ -53,12 +24,7 @@ module Helper
     pieces.values
   end
 
-  #trim an array item if the item has a capture message. e.g.'h5(capture opposing pawn)' => 'h5'
-  def trim_capture_messages(array, trimmed_items = [])
-    array.each { |move| trimmed_items << move[0,2] }
 
-    trimmed_items
-  end
 
   def add_top_spacing(string, count = 0)
     ("\n" * count) + string unless count <= 0
@@ -67,6 +33,26 @@ module Helper
   def add_bottom_spacing(string, count = 0)
     string + ("\n" * count) unless count <= 0
   end
+
+
+
+
+
+
+  def add_new_line(count = 1)
+    " \n" * 1
+  end
+
+  #trim an item if the item has a capture message. e.g.'h5(capture opposing pawn)' => 'h5'
+  def trim_capture_message(item_with_capture_message)
+    item_with_capture_message[0,2]
+  end
+
+  #pending for rearranging!
+
+
+
+
 
   # adjusts the string to the left-most or right-most of the string_size extended string
   def adjust_string(string, direction, string_size)
@@ -78,19 +64,48 @@ module Helper
     end
   end
 
+  # removes the integer suffix on piece_name. knight2 => knight
   def remove_piece_name_suffix(piece_name)
     piece_name.tr("0-9", "")
   end
 
-  def put_colour_to(item, color)
-    item.colorize(color: :"#{color}")
-  end
-
+  # uses colorize gem to put color on the background to a string
   def put_background_color(str, color)
     str.colorize(background: :"#{color}")
   end
 
+  # given row index is 0-7; adding 1 corrects it for the 8x8 custom chess board
   def customize_row_index(row_index)
     row_index += 1
+  end
+
+  # converts an array of board coordinates to a board position [1,6] => a6
+  def convert_to_piece_position(coordinates)
+    alpha = ('a'..'h').to_a
+
+    row_index, column_index = coordinates
+
+    alpha[row_index-1] + column_index.to_s
+  end
+
+  # converts a board position to an array of board coordinates a6 => [0,6]
+  def convert_to_board_coordinates(position)
+    alpha = ('a'..'h').to_a
+
+    x_coordinate, y_coordinate = position.split('')
+
+    [alpha.index(x_coordinate), y_coordinate.to_i]
+  end
+
+  # uses colorize gem to put color to a string
+  def put_colour_to(item, color)
+    item.colorize(color: :"#{color}")
+  end
+
+  # returns a console compatible string formatted unicode
+  def encode(unicode)
+    unicode.gsub!('U+', '\u')
+
+    unicode.gsub(/\\u[\da-f]{4}/i) { |m| [m[-4..-1].to_i(16)].pack('U') }
   end
 end

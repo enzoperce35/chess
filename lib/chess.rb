@@ -74,7 +74,7 @@ class Chess < Board
 
   # asks user to input a move, 'apply_move' if input is valid, otherwise 'repeat_turn'
   def select_move
-    @move = interface.ask_for_move(chosen_piece)
+    @move = interface.ask_for_move
 
     input_is_valid? ? apply_move : repeat_turn
   end
@@ -110,7 +110,7 @@ class Chess < Board
     @board = Board.new(turn_player, opposing_player)
   end
 
-  # puts the top side pieces to the bottom side and the bottom side pieces to the top side
+  # exchanges pieces board sides; by default, white pieces are on top and black pieces are on bottom
   def switch_board_sides
     2.times do |i|
       player_pieces = i.zero? ? turn_player['active_pieces'] : opposing_player['active_pieces']
