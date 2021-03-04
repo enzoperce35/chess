@@ -35,7 +35,7 @@ class SideMessage
   end
 
   # creates the message lines
-  def create_message_lines
+  def create_message_body
     create_message_lines_container
 
     put_message_lines_into_container
@@ -44,7 +44,7 @@ class SideMessage
   end
 
   # returns an array containing the center adjusted message header string
-  def create_a_centered_message_header
+  def create_message_header
     message_header = "#{piece_color.upcase} PIECES"
 
     centered_message_header = adjust_string(message_header, 'right', 26)
@@ -71,14 +71,13 @@ class SideMessage
     end
   end
 
-  # returns an array of side message lines
   def create_side_message
-    create_message_items
+    items = create_message_items
 
-    message_header = create_a_centered_message_header
+    header = create_message_header
 
-    message_body = create_message_lines
+    body = create_message_body
 
-    message_header + message_body
+    header + body
   end
 end

@@ -2,13 +2,13 @@ module Helper
 
 
 
-  #returns an array of opposing player's piece positions
-  def get_opposing_pieces(board, arr = [])
-    board.opposing_player['active_pieces'].each_value do |val|
-      arr << val['position']
-    end
-    arr
-  end
+  ##returns an array of opposing player's piece positions
+  #def get_player_pieces(board, player_pieces, arr = [])
+  #  player_pieces.each_value do |val|
+  #    arr << val['position']
+  #  end
+  #  arr
+  #end
 
 
 
@@ -37,7 +37,15 @@ module Helper
 
 
 
-
+  def locate_values_of(piece_position, player_values)
+    player_values.values.each do |attributes|
+      attributes.values.each do |value|
+        if value == piece_position
+          return attributes
+        end
+      end
+    end
+  end
 
   def add_new_line(count = 1)
     " \n" * 1
@@ -108,4 +116,6 @@ module Helper
 
     unicode.gsub(/\\u[\da-f]{4}/i) { |m| [m[-4..-1].to_i(16)].pack('U') }
   end
+
+
 end

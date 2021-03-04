@@ -1,39 +1,32 @@
+require_relative 'user_prompt.rb'
 require_relative 'pieces.rb'
-require_relative 'interface.rb'
 
 # creates and modify the players and players' attributes
-class Player
-  attr_accessor :iteration, :player_name, :piece_color, :piece_set
+class ChessPlayer
+  attr_accessor :piece_color
 
-  # gets a set of chess pieces
-  def create_piece_set_for_the_player
-    @piece_set = Pieces.new(piece_color).create_piece_set
+  include UserPrompt
+
+  def initialize(piece_color)
+    @piece_color = piece_color
   end
 
-  # gets the name of the player
-  def ask_for_player_name
-    #@player_name = ConsoleInterface.new.ask_player_name_for(piece_color)
-    @player_name = iteration.zero? ? 'John' : 'Mark' # not included
+  def assign_piece_set
+    ChessPieces.new.create_piece_set_for(piece_color)
   end
 
-  # gets the color for the pieces
-  def assign_color_to_the_player
-    @piece_color = iteration.zero? ? 'white' : 'black'
+  def prompt_name
+    puts player_name_prompt(piece_color)
+
+    gets.chomp!
   end
 
-  # returns an array of players with their attributes
-  def create_players(players = [])
-    2.times do |i|
-      @iteration = i
+  def set_player
+    #player_name = prompt_name
+    player_name = 'sample_name'
 
-      assign_color_to_the_player
+    piece_set = assign_piece_set
 
-      ask_for_player_name
-
-      create_piece_set_for_the_player
-
-      players << { 'name' => player_name, 'piece_color' => piece_color, 'active_pieces' => piece_set }
-    end
-    players
+    { 'name' => player_name, 'piece_color' => piece_color, 'active_pieces' => piece_set }
   end
 end

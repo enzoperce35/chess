@@ -1,28 +1,32 @@
 require_relative 'board.rb'
-require_relative 'pieces.rb'
+require_relative 'chess_move.rb'
 require_relative 'helper.rb'
+require_relative 'display.rb'
 
 # this is the application's framework
-class Chess < Board
-  attr_accessor :turn_count, :player1, :player2, :board,
-                :interface, :chosen_piece, :game_over, :move
+class Chess
+  attr_accessor :chess_players, :chess_board, :turn_count, :board,
+                :piece, :move
 
   include Helper
 
-  def initialize(player1, player2)
-    @player1 = player1
-    @player2 = player2
+  def initialize(chess_players)
+    @chess_players = chess_players
     @turn_count = 1
     @game_over = false
   end
 
   # returns the player which will make a move
   def turn_player
+    player1, player2 = @chess_players
+
     turn_count.odd? ? player1 : player2
   end
 
   # returns the player which will make a move next
   def opposing_player
+    player1, player2 = @chess_players
+
     turn_count.odd? ? player2 : player1
   end
 
@@ -31,122 +35,172 @@ class Chess < Board
     @turn_count += 1
   end
 
-  # return to piece selection phase
-  def repeat_turn
-    select_piece(move)
-
-    select_move
-  end
-
-  # modify 'opposing_player' attributes with the changes made by this turn
-  def apply_changes_to_opposing_player
-    opposing_player['active_pieces'].delete_if do |_key, val|
+  def apply_changes_to_opposing_player(pieces)
+    pieces.delete_if do |_key, val|
       val['position'] == move
     end
   end
 
-  # modify 'turn_player' attributes with the changes made by this turn
-  def apply_changes_to_turn_player
-    turn_player['active_pieces'].map do |_key, val|
-      next unless val == chosen_piece
+  def apply_changes_to_turn_player(pieces)
+    pieces.map do |_key, val|
+      next unless val['position'] == piece
 
       val['position'] = move
-
-      val['moves'] = []
 
       val['moved?'] = true
     end
   end
 
-  # alter the pieces' positions then use those to instantiate 'Board'; assign to '@board'
-  def apply_move
-    apply_changes_to_turn_player
+  def apply_chess_move
+    chess_players.each do |player|
+      pieces = player['active_pieces']
 
-    apply_changes_to_opposing_player
-
-    save_board_and_player_changes
-  end
-
-  # returns true if the input does not have the following words
-  def input_is_valid?
-    !move.include?('re-select') && !move.include?('No possible moves')
-  end
-
-  # asks user to input a move, 'apply_move' if input is valid, otherwise 'repeat_turn'
-  def select_move
-    @move = interface.ask_for_move
-
-    input_is_valid? ? apply_move : repeat_turn
-  end
-
-  # asks user to input the piece to move; a message is displayed in case of 'repeat_turn'
-  def select_piece(extra_message = nil)
-    puts extra_message unless extra_message.nil?
-
-    @interface = ConsoleInterface.new(turn_player, board)
-
-    @chosen_piece = interface.ask_for_piece
-  end
-
-  # displays the chess board with the list of turn player's active pieces
-  def display_board_with_list_of_pieces
-    board_with_side_message = board.create_board_with_side_message
-
-    puts board_with_side_message
-  end
-
-  # insert chess piece images into the board squares
-  def put_in_the_chess_pieces
-    board.populate_board
-  end
-
-  # creates a hash of the chess board's squares
-  def set_an_empty_chess_board
-    @board.squares_hash = create_squares
-  end
-
-  # instantiate players' values
-  def save_board_and_player_changes
-    @board = Board.new(turn_player, opposing_player)
-  end
-
-  # exchanges pieces board sides; by default, white pieces are on top and black pieces are on bottom
-  def switch_board_sides
-    2.times do |i|
-      player_pieces = i.zero? ? turn_player['active_pieces'] : opposing_player['active_pieces']
-
-      Pieces.new.alter_pieces_position(player_pieces)
+      if player == turn_player
+        apply_changes_to_turn_player(pieces)
+      else
+        apply_changes_to_opposing_player(pieces)
+      end
     end
   end
 
-  # sets the new state of the chess board
-  def prepare_chess_board
-    switch_board_sides
+  def make_a_chess_move
+    prompt = ChessMove.new(chess_board, turn_player, opposing_player)
 
-    save_board_and_player_changes
+    @piece = prompt.chess_piece_to_move
 
-    set_an_empty_chess_board
+    @move = prompt.chess_square_to_put(piece)
 
-    put_in_the_chess_pieces
+    move.nil? ? play : apply_chess_move
+  end
+
+  # returns an array of altered board coordinates
+  def alter_board(x_coord, y_coord)
+    [x_coord = (8 - x_coord).abs,
+
+     y_coord = (9 - y_coord).abs]
+  end
+
+  def alter_pieces_positions
+    chess_players.each do |player|
+      player['active_pieces'].values.map do |piece|
+        piece_position = piece['position']
+
+        coordinates = convert_to_board_coordinates(piece_position)
+
+        coordinates = alter_board(*coordinates)
+
+        piece_position = convert_to_piece_position(coordinates)
+
+        piece['position'] = piece_position
+      end
+    end
+  end
+
+  def display_chess_board_with_side_message
+    @chess_players = alter_pieces_positions
+
+    @chess_board = ChessBoard.new(chess_players).put_chess_pieces
+
+    side_message = SideMessage.new(turn_player).create_side_message
+
+    Display.new(chess_board, side_message).display
   end
 
   # returns true if game is over
-  def game_is_over?
+  def is_over?
     @game_over == true
   end
 
   # make player turns until game is over
   def play
-    until game_is_over?
-      prepare_chess_board
+    #piece_moves_tester
+    display_chess_board_with_side_message
 
-      display_board_with_list_of_pieces
+    make_a_chess_move
 
-      select_piece
+    next_turn
+  end
+end
 
-      select_move
 
-      next_turn
-    end
+
+
+#just a tester, remove unnecessary or put up pieces that is needed to test piece moves
+#to be put anywhere inside 'chess.rb'
+#to be called at the second line of 'start_method' after 'set_players' in 'main.rb'
+#inspect @possible_moves at interface.rb to see all possible moves of the chesen piece being tested
+def piece_moves_tester
+
+  delete_all_black
+
+  delete_all_white
+
+
+  place_piece('bishop', 'h2', turn_player)
+  place_piece('queen', 'g4', turn_player)
+  place_piece('pawn', 'f6', opposing_player)
+  place_piece('queen', 'b4', opposing_player)
+
+  #need to alter chessplayers
+end
+
+#middle
+#corner1, 2, 3, 4,
+
+#remove all white pieces
+def delete_all_white
+  turn_player['active_pieces'] = {}
+end
+
+#remove all black_pieces
+def delete_all_black
+  opposing_player['active_pieces'] = {}
+end
+
+# returns an array of altered board coordinates
+def alter_coordinates(board_coordinate)
+  x_coord, y_coord = board_coordinate
+
+  x_coord = (8 - x_coord).abs
+
+  y_coord = (9 - y_coord).abs
+
+  [x_coord, y_coord]
+end
+
+def alter_position_of(piece_position)
+  board_coordinate = convert_to_board_coordinates(piece_position)
+
+  altered_board_coordinate = alter_coordinates(board_coordinate)
+
+  convert_to_piece_position(altered_board_coordinate)
+end
+
+#creates a name, image, position values to each or either of the 'turn' or 'opposing' player's 'active_pieces'
+def place_piece(piece, index, player)
+  index = alter_position_of(index)
+
+  image = get_image(piece)
+
+  image = put_colour_to(image, 'black') if player['piece_color'] == 'black'
+
+  player['active_pieces'].store("#{piece}1", {"name"=>"#{piece}", "image"=>image, "position"=>"#{index}", "moved?"=>false, "moves"=>[]})
+end
+
+#returns the piece image
+def get_image(piece_name)
+  case piece_name
+  when 'king'
+    "\u265A"
+  when 'queen'
+    "\u265B"
+  when 'bishop'
+    "\u265D"
+  when 'rook'
+    "\u265C"
+  when 'knight'
+    "\u265E"
+  when 'pawn'
+    "\u265F"
   end
 end

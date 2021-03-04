@@ -3,20 +3,13 @@ require_relative 'chess.rb'
 
 # controls the application
 class Game
-  attr_reader :player1, :player2
-
-  def set_players
-    @player1, @player2 = Player.new.create_players
-  end
-
-  def start_game
-    Chess.new(player1, player2).play
-  end
 
   def start
-    set_players
+    chess_players = Array.new(2) { |i| ChessPlayer.new( i.zero? ? 'white' : 'black').set_player }
 
-    start_game
+    game = Chess.new(chess_players)
+
+    game.play until game.is_over?
   end
 end
 
