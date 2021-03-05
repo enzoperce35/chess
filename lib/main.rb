@@ -1,11 +1,11 @@
 require_relative 'player.rb'
 require_relative 'chess.rb'
 
-# controls the application
+# initiates the application
 class Game
 
   def start
-    chess_players = Array.new(2) { |i| ChessPlayer.new( i.zero? ? 'white' : 'black').set_player }
+    chess_players = Array.new(2) { |i| Player.new( i.zero? ? 'white' : 'black').set_player }
 
     game = Chess.new(chess_players)
 

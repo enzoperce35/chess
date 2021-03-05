@@ -1,8 +1,8 @@
-require_relative 'helper.rb'
+require_relative './modules/helper.rb'
 
 # creates the extra information attached to the right side of the chess board
 class SideMessage
-  attr_accessor :piece_color, :active_pieces, :message_items, :message_lines
+  attr_accessor :piece_color, :active_pieces
 
   include Helper
 
@@ -11,55 +11,32 @@ class SideMessage
     @active_pieces = turn_player['active_pieces']
   end
 
-  # returns an array of string converted message lines with white spaces removed to it's right side
-  def convert_message_line_arrays_into_a_string
-    message_lines.map! { |line_arr| line_arr.join.rstrip }
+  def string_convert_each_item_inside(item_container)
+    item_container.map! { |item| item.join.rstrip }
+
+    item_container
   end
 
-  # pushes the adjusted message items one at a time into each array containers of @message_lines
-  def put_message_lines_into_container(line_index = 0)
+  # pushes the adjusted message items one at a time into each item containers
+  def put_message_items_into(item_container, message_items, line_index = 0)
     message_items.each do |item|
       line_index = 0 if line_index == 6
 
       adjusted_message_item = adjust_string(item, 'left', 13)
 
-      @message_lines[line_index] << adjusted_message_item
+      item_container[line_index] << adjusted_message_item
 
       line_index += 1
     end
+    item_container
   end
 
-  # initializes an array of six empty arrays to contain the message lines
-  def create_message_lines_container
-    @message_lines = Array.new(6) { [] }
-  end
-
-  # creates the message lines
-  def create_message_body
-    create_message_lines_container
-
-    put_message_lines_into_container
-
-    convert_message_line_arrays_into_a_string
-  end
-
-  # returns an array containing the center adjusted message header string
-  def create_message_header
-    message_header = "#{piece_color.upcase} PIECES"
-
-    centered_message_header = adjust_string(message_header, 'right', 26)
-
-    Array.new(1) { centered_message_header }
-  end
-
-  # creates and populate an array with the message items
-  def create_message_items
-    @message_items = []
-
+  # returns an array of modified chess piece information
+  def create_message_items(items = [])
     active_pieces.each do |piece_name, attribute|
       margin = '    '
 
-      piece_name = remove_piece_name_suffix(piece_name)
+      piece_name = remove_suffix_to(piece_name)
 
       blank_space = ' '
 
@@ -67,13 +44,33 @@ class SideMessage
 
       piece = margin + piece_name + blank_space + piece_position
 
-      @message_items << piece
+      items << piece
     end
+    items
   end
 
-  def create_side_message
-    items = create_message_items
+  # returns an array of stringed informations
+  def create_message_body
+    item_container = Array.new(6) { [] }
 
+    message_items = create_message_items
+
+    item_container = put_message_items_into(item_container, message_items)
+
+    string_convert_each_item_inside(item_container)
+  end
+
+
+  def create_message_header
+    message_header = "#{piece_color.upcase} PIECES"
+
+    centered_message_header = adjust_string(message_header, 'right', 26)
+
+    [centered_message_header]
+  end
+
+  # returns an array of message string lines
+  def create_side_message
     header = create_message_header
 
     body = create_message_body

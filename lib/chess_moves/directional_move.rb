@@ -1,4 +1,4 @@
-require './lib/helper.rb'
+require '/home/edgar/chess/lib/modules/helper.rb'
 
 class DirectionalMove
   attr_reader :chess_board, :player_pieces, :current_square,

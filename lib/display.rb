@@ -1,6 +1,6 @@
-require_relative 'side_message.rb'
-require_relative 'helper.rb'
+require_relative './modules/helper.rb'
 
+# assembles and displays the chess board with side messge
 class Display
   attr_accessor :chess_board, :side_message
 
@@ -11,60 +11,66 @@ class Display
     @side_message  = side_message
   end
 
-  def add_spacings_to(chess_board)
-    2.times do |i|
-      chess_board = i.zero? ? add_top_spacing(chess_board, 2) : add_bottom_spacing(chess_board, 2)
-    end
-
-    chess_board
+  def display
+    puts chess_board
   end
 
-  def attach_x_coordinates_to(chess_board)
+  # adds space padding to the top and bottom of the chess board
+  def add_spacings
+    2.times do |i|
+      @chess_board = i.zero? ? add_top_spacing(chess_board, 2) : add_bottom_spacing(chess_board, 2)
+    end
+  end
+
+  # adds a-h alphabet letters below the chess board
+  def attach_x_coordinates
     x_coords = ('   a'..'   h').to_a.join
 
     x_coordinates = put_colour_to(x_coords, 'red')
 
-    chess_board += x_coordinates
+    @chess_board += x_coordinates
   end
 
-  def attach_side_message_to(chess_board)
+  # attaches the chess board and the side message
+  def attach_side_message
     side_message.each do |line|
       index = chess_board.index(" \n")
 
-      chess_board.insert(index + 1, line)
+      @chess_board.insert(index + 1, line)
     end
-    chess_board
   end
 
   # returns a colored integer with a space to it's right side
-  def add(col_index)
+  def attach(col_index)
     y_coord = put_colour_to(col_index.to_s, 'red')
 
     y_coord + ' '
   end
 
-  def convert_chess_board_to_string(str = '')
+  # converts the chess board from a hash to a string
+  def convert_to_string(str = '')
     chess_board.values.each do |square|
       sqr_image, col_index, row_index = square.values
 
-      str += add(col_index) if row_index == 1
+      str += attach(col_index) if row_index == 1
 
       str += sqr_image
 
-      str += add_new_line if row_index == 8
+      str += " \n" if row_index == 8
     end
-    str
+    @chess_board = str
   end
 
-  def display
-    chess_board = convert_chess_board_to_string
+  # processes the chess board with the following method
+  def attach_and_display
+    convert_to_string
 
-    chess_board = attach_side_message_to(chess_board)
+    attach_side_message
 
-    chess_board = attach_x_coordinates_to(chess_board)
+    attach_x_coordinates
 
-    chess_board = add_spacings_to(chess_board)
+    add_spacings
 
-    puts chess_board
+    display
   end
 end

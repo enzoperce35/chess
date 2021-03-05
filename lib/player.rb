@@ -1,8 +1,8 @@
-require_relative 'user_prompt.rb'
-require_relative 'pieces.rb'
+require_relative './modules/user_prompt.rb'
+require_relative 'piece_set.rb'
 
-# creates and modify the players and players' attributes
-class ChessPlayer
+# sets the chess players with their attributes
+class Player
   attr_accessor :piece_color
 
   include UserPrompt
@@ -12,7 +12,7 @@ class ChessPlayer
   end
 
   def assign_piece_set
-    ChessPieces.new.create_piece_set_for(piece_color)
+    PieceSet.new(piece_color).create_piece_set
   end
 
   def prompt_name

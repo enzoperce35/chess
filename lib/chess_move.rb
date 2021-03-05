@@ -1,7 +1,8 @@
-require_relative 'helper.rb'
+require_relative './modules/helper.rb'
+require_relative './modules/user_prompt.rb'
 require_relative 'possible_moves.rb'
-require_relative 'user_prompt.rb'
 
+# processes user input chess moves
 class ChessMove
   attr_accessor :chess_board, :turn_player, :opposing_player, :player_pieces, :player_name,
                 :chosen_piece, :piece_position, :piece_name, :possible_moves, :valid_moves
@@ -17,6 +18,7 @@ class ChessMove
     @player_name = turn_player['name']
   end
 
+  # prompts the user to type the valid move from the valid moves list
   def choose_a_valid_move
     puts choose_valid_move_prompt(piece_name, piece_position),
          possible_moves,
@@ -60,7 +62,8 @@ class ChessMove
     valid_moves.include?(chess_move)
   end
 
-  def select_a_valid_move
+  # returns a valid board position as a chess move
+  def make_a_move
     puts select_square_prompt(piece_name)
 
     chess_move = gets.chomp! until chess_board.keys.include?(chess_move)
@@ -76,17 +79,18 @@ class ChessMove
     possible_moves.length.zero?
   end
 
-  def chess_square_to_put(chosen_piece)
-    @chosen_piece = locate_values_of(chosen_piece, player_pieces)
+  # returns a valid move or an invalid phrase
+  def chess_square_to_put(piece)
+    @chosen_piece = locate_values_of(piece, player_pieces)
 
     @piece_name = chosen_piece['name']
 
     @piece_position = chosen_piece['position']
 
-    no_possible_move? ? no_move_prompt(piece_name, piece_position) : select_a_valid_move
+    no_possible_move? ? no_move_prompt(piece_name, piece_position) : make_a_move
   end
 
-  # prompt the user to select an item from @piece_positions array; assign to @selected_piece
+  # prompt the user to select an item from piece_positions arra
   def choose_a_piece_from(piece_positions)
     puts turn_player_prompt(player_name),
          select_piece_prompt(piece_positions)
@@ -96,7 +100,7 @@ class ChessMove
     chosen_piece
   end
 
-  # populate an array with turn player's pieces positions; assign the array to @piece_positions
+  # returns an array of piece positions
   def sort_turn_player_pieces(positions = [])
     player_pieces.each_value do |val|
       positions << val['position']
@@ -104,7 +108,7 @@ class ChessMove
     positions
   end
 
-  # returns a user selected piece attributes
+  # returns a piece_position
   def chess_piece_to_move
     piece_positions = sort_turn_player_pieces
 

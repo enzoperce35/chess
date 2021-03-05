@@ -1,4 +1,4 @@
-require_relative 'helper.rb'
+require_relative './modules/helper.rb'
 require_relative './chess_moves/directional_move.rb'
 require_relative './chess_moves/knight_move.rb'
 
