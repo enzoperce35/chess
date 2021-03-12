@@ -7,7 +7,7 @@ require_relative 'display.rb'
 # controls the application
 class Chess
   attr_accessor :chess_players, :chess_board, :turn_count,
-                :turn_piece, :turn_move, :side_message
+                :turn_piece, :turn_move, :side_message, :player_move
 
   include Helper
 
@@ -35,10 +35,32 @@ class Chess
     @turn_count += 1
   end
 
+  def adjacent_opponent_piece
+    row_ind, col_ind = convert_to_board_coordinates(turn_move)
+
+    adjacent_piece = [row_ind, col_ind - 1]
+
+    convert_to_piece_position(adjacent_piece)
+  end
+
   def apply_changes_to_opposing_player(pieces)
     pieces.delete_if do |_key, val|
-      val['position'] == turn_move
+      if player_move.is_en_passant?
+        val['position'] == adjacent_opponent_piece
+      else
+        val['position'] == turn_move
+      end
     end
+  end
+
+  def apply_change_to_rook1_of_turn_player(pieces)
+    return nil if turn_piece == 'h1'
+
+    @turn_piece = 'h1'
+
+    @turn_move = 'f1'
+
+    apply_changes_to_turn_player(pieces)
   end
 
   def apply_changes_to_turn_player(pieces)
@@ -53,6 +75,7 @@ class Chess
 
       val['latest_move'] = true
     end
+    apply_change_to_rook1_of_turn_player(pieces) if player_move.is_castling?
   end
 
   # modifies chess player pieces in accordance with the chess move made
@@ -83,11 +106,11 @@ class Chess
   end
 
   def make_a_chess_move
-    prompt = PlayerMove.new(chess_board, turn_player, opposing_player)
+    @player_move = PlayerMove.new(chess_board, turn_player, opposing_player)
 
-    @turn_piece = prompt.chess_piece_to_move
+    @turn_piece = player_move.choose_a_piece
 
-    @turn_move = prompt.chess_square_to_put(turn_piece)
+    @turn_move = player_move.choose_a_square_to_put(turn_piece)
 
     no_possible_move? ? redo_chess_move : apply_chess_move
   end
@@ -138,6 +161,7 @@ end
 #to be put anywhere inside 'chess.rb'
 #to be called at the last line of 'initialize_method' of chess.rb
 #inspect @possible_moves at interface.rb to see all possible moves of the chosen piece being tested
+#if placing multiple same piece in place_piece method, the next piece should be the same with the last piece
 def piece_moves_tester
 
   delete_all_black
@@ -157,10 +181,12 @@ def piece_moves_tester
   place_piece('pawn', 'b3', turn_player)
   place_piece('pawn', 'c4', opposing_player)
   place_piece('pawn', 'f7', opposing_player)
+  place_piece('pawn', 'b7', opposing_player)
+  place_piece('pawn', 'a7', opposing_player)
   place_piece('rook', 'b5', opposing_player)
+  place_piece('rook', 'a8', opposing_player)
   place_piece('bishop', 'h7', opposing_player)
-
-  #place_piece('knight', 'g1', opposing_player)
+  place_piece('king', 'd8', opposing_player)
 end
 
 #remove all white pieces
@@ -199,7 +225,6 @@ end
 
 # add a number suffix to 'piece_name' which represents it's multitude
 def add_suffix(name, player)
-  #last_added_piece = piece_set.keys[-1]
   last_added_piece = player['active_pieces'].keys[-1]
 
   prev_name, suffix = split_piece_name_of(last_added_piece) unless last_added_piece.nil?
