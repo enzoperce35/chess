@@ -18,8 +18,7 @@ class PieceSet
               'image' => piece_image,
               'position' => "#{y_coordinate}#{x_coordinate}",
               'color' => piece_color,
-              'moved?' => false,
-              'moves' => [] }
+              'moves' => 0 }
 
     @piece_set.store(piece_name, value)
   end

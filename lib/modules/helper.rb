@@ -1,4 +1,10 @@
 module Helper
+  # returns an array of altered x and y board coordinates
+  def alter_board(x_coord, y_coord)
+    [x_coord = (9 - x_coord).abs,
+
+     y_coord = (9 - y_coord).abs]
+  end
 
   #trim an item if the item has a capture message. e.g.'h5(capture opposing pawn)' => 'h5'
   def trim_capture_message(item_with_capture_message)
@@ -49,7 +55,7 @@ module Helper
 
     x_coordinate, y_coordinate = position.split('')
 
-    [alpha.index(x_coordinate), y_coordinate.to_i]
+    [alpha.index(x_coordinate)+1, y_coordinate.to_i]
   end
 
   # converts an array of board coordinates to a board position [1,6] => a6

@@ -1,7 +1,7 @@
 require_relative './modules/helper.rb'
 require_relative 'side_message.rb'
 require_relative 'chess_board.rb'
-require_relative 'chess_move.rb'
+require_relative 'player_move.rb'
 require_relative 'display.rb'
 
 # controls the application
@@ -15,6 +15,7 @@ class Chess
     @chess_players = chess_players
     @turn_count = 1
     @game_over = false
+    piece_moves_tester
   end
 
   def turn_player
@@ -42,11 +43,15 @@ class Chess
 
   def apply_changes_to_turn_player(pieces)
     pieces.map do |_key, val|
+      val.delete_if { |k, v| k == 'latest_move' }
+
       next unless val['position'] == turn_piece
 
       val['position'] = turn_move
 
-      val['moved?'] = true
+      val['moves'] += 1
+
+      val['latest_move'] = true
     end
   end
 
@@ -78,20 +83,13 @@ class Chess
   end
 
   def make_a_chess_move
-    prompt = ChessMove.new(chess_board, turn_player, opposing_player)
+    prompt = PlayerMove.new(chess_board, turn_player, opposing_player)
 
     @turn_piece = prompt.chess_piece_to_move
 
     @turn_move = prompt.chess_square_to_put(turn_piece)
 
     no_possible_move? ? redo_chess_move : apply_chess_move
-  end
-
-  # returns an array of altered x and y board coordinates
-  def alter_board(x_coord, y_coord)
-    [x_coord = (8 - x_coord).abs,
-
-     y_coord = (9 - y_coord).abs]
   end
 
   # alters each chess pieces' board position coordinates
@@ -132,5 +130,114 @@ class Chess
     make_a_chess_move
 
     next_turn
+  end
+end
+
+
+#just a tester, remove unnecessary or put up pieces that is needed to test piece moves
+#to be put anywhere inside 'chess.rb'
+#to be called at the last line of 'initialize_method' of chess.rb
+#inspect @possible_moves at interface.rb to see all possible moves of the chosen piece being tested
+def piece_moves_tester
+
+  delete_all_black
+
+  delete_all_white
+
+
+
+  place_piece('king', 'e1', turn_player)
+  place_piece('rook', 'a1', turn_player)
+  place_piece('rook', 'h1', turn_player)
+  place_piece('queen', 'e4', turn_player)
+  place_piece('knight', 'g5', turn_player)
+  place_piece('pawn', 'd2', turn_player)
+  place_piece('pawn', 'g2', turn_player)
+  place_piece('pawn', 'h2', turn_player)
+  place_piece('pawn', 'b3', turn_player)
+  place_piece('pawn', 'c4', opposing_player)
+  place_piece('pawn', 'f7', opposing_player)
+  place_piece('rook', 'b5', opposing_player)
+  place_piece('bishop', 'h7', opposing_player)
+
+  #place_piece('knight', 'g1', opposing_player)
+end
+
+#remove all white pieces
+def delete_all_white
+  turn_player['active_pieces'] = {}
+end
+
+#remove all black_pieces
+def delete_all_black
+  opposing_player['active_pieces'] = {}
+end
+
+# returns an array of altered board coordinates
+def alter_coordinates(board_coordinate)
+  x_coord, y_coord = board_coordinate
+
+  x_coord = (9 - x_coord).abs
+
+  y_coord = (9 - y_coord).abs
+
+  [x_coord, y_coord]
+end
+
+def alter_position_of(piece_position)
+  board_coordinate = convert_to_board_coordinates(piece_position)
+
+  altered_board_coordinate = alter_coordinates(board_coordinate)
+
+  convert_to_piece_position(altered_board_coordinate)
+end
+
+# returns an array of splitted piece name and piece suffix
+def split_piece_name_of(last_added_piece)
+  last_added_piece.scan(/\d+|\D+/)
+end
+
+# add a number suffix to 'piece_name' which represents it's multitude
+def add_suffix(name, player)
+  #last_added_piece = piece_set.keys[-1]
+  last_added_piece = player['active_pieces'].keys[-1]
+
+  prev_name, suffix = split_piece_name_of(last_added_piece) unless last_added_piece.nil?
+
+  if name == prev_name
+    name += (suffix.to_i + 1).to_s
+  else
+    name += '1'
+  end
+end
+
+#creates a name, image, position values to each or either of the 'turn' or 'opposing' player's 'active_pieces'
+def place_piece(piece, index, player)
+  piece_name = add_suffix(piece, player)
+
+  index = alter_position_of(index)
+
+  image = get_image(piece)
+
+  image = put_colour_to(image, 'black') if player['piece_color'] == 'black'
+
+  player['active_pieces'].store(piece_name, {"name"=>"#{piece}", "image"=>image, "position"=>"#{index}", "moves"=>0})
+end
+
+#returns the piece image
+def get_image(piece_name)
+  case piece_name
+  when 'king'
+    "\u265A"
+  when 'queen'
+    "\u265B"
+  when 'bishop'
+    "\u265D"
+  when 'rook'
+    "\u265C"
+  when 'knight'
+    "\u265E"
+  when 'pawn'
+    "\u265F"
   end
 end
