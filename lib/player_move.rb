@@ -5,10 +5,31 @@ require_relative 'possible_moves.rb'
 # processes user input chess moves
 class PlayerMove
   attr_accessor :chess_board, :turn_player, :opposing_player, :player_pieces, :player_name,
-                :chosen_piece, :piece_position, :piece_name, :possible_moves, :valid_moves
+                :chosen_piece, :piece_position, :piece_name, :possible_moves, :valid_moves,
+                :valid_move
 
   include Helper
   include UserPrompt
+
+  def is_castling?
+    possible_moves.each do |move|
+      if move.include?(valid_move)
+        return move.include?('castling')
+
+        break
+      end
+    end
+  end
+
+  def is_en_passant?
+    possible_moves.each do |move|
+      if move.include?(valid_move)
+        return move.include?('en passant')
+
+        break
+      end
+    end
+  end
 
   def initialize(chess_board, turn_player, opposing_player)
     @chess_board = chess_board
@@ -68,19 +89,26 @@ class PlayerMove
 
     chess_move = gets.chomp! until chess_board.keys.include?(chess_move)
 
-    move_is_a_valid?(chess_move) ? chess_move : choose_option_for_the_invalid(chess_move)
+    @valid_move =
+    if move_is_a_valid?(chess_move)
+      chess_move
+    else
+      choose_option_for_the_invalid(chess_move)
+    end
+
+    valid_move
   end
 
   def no_possible_move?
     moves = PossibleMoves.new(chosen_piece, chess_board, turn_player, opposing_player)
 
-    p @possible_moves = moves.generate_possible_moves
+    @possible_moves = moves.generate_possible_moves
 
     possible_moves.length.zero?
   end
 
   # returns a valid move or an invalid phrase
-  def chess_square_to_put(piece)
+  def choose_a_square_to_put(piece)
     @chosen_piece = locate_values_of(piece, player_pieces)
 
     @piece_name = chosen_piece['name']
@@ -109,7 +137,7 @@ class PlayerMove
   end
 
   # returns a piece_position
-  def chess_piece_to_move
+  def choose_a_piece
     piece_positions = sort_turn_player_pieces
 
     choose_a_piece_from(piece_positions)
