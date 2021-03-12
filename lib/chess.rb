@@ -169,7 +169,11 @@ def piece_moves_tester
   delete_all_white
 
 
+  piece_moves_check_set
 
+end
+
+def piece_moves_check_set
   place_piece('king', 'e1', turn_player)
   place_piece('rook', 'a1', turn_player)
   place_piece('rook', 'h1', turn_player)

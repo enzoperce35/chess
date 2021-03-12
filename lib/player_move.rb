@@ -11,6 +11,14 @@ class PlayerMove
   include Helper
   include UserPrompt
 
+  def initialize(chess_board, turn_player, opposing_player)
+    @chess_board = chess_board
+    @turn_player = turn_player
+    @opposing_player = opposing_player
+    @player_pieces = turn_player['active_pieces']
+    @player_name = turn_player['name']
+  end
+
   def is_castling?
     possible_moves.each do |move|
       if move.include?(valid_move)
@@ -29,14 +37,6 @@ class PlayerMove
         break
       end
     end
-  end
-
-  def initialize(chess_board, turn_player, opposing_player)
-    @chess_board = chess_board
-    @turn_player = turn_player
-    @opposing_player = opposing_player
-    @player_pieces = turn_player['active_pieces']
-    @player_name = turn_player['name']
   end
 
   # prompts the user to type the valid move from the valid moves list

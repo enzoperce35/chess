@@ -118,7 +118,7 @@ class PossibleMoves
     direction = directions.shift
 
     @move = DirectionalMoves.new(piece, current_square, chess_board, player_pieces,
-                                 opponent_pieces, direction, multiple_times)
+                                 opponent_pieces, direction, multiple_times, moves)
 
     move_chess_piece
 
