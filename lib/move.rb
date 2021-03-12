@@ -96,23 +96,30 @@ class Move
     ally_pieces.include?(move_position)
   end
 
+  def not_a_first_move?
+    moves > 0
+  end
+
   def move_is_out_of_border?
     row_index, column_index = new_square
 
     !row_index.between?(1,8) || !column_index.between?(1,8)
   end
 
-  def empty_squares_is_not_possible
-    move_is_out_of_border? || move_is_ally_blocked? || !move_is_blocked?
-  end
-
-  def pawn_capturing_direction?
-    piece == 'pawn' && (direction == 'up-left' || direction == 'up-right')
+  def check_each_pawns_direction
+    case direction
+    when 'up'
+      move_is_out_of_border? || move_is_blocked?
+    when 'double-up'
+      not_a_first_move? || move_is_blocked?
+    when  'up-left', 'up-right'
+      move_is_out_of_border? || move_is_ally_blocked? || !move_is_blocked?
+    end
   end
 
   def is_not_possible?
-    if pawn_capturing_direction?
-      empty_squares_is_not_possible
+    if piece == 'pawn'
+      check_each_pawns_direction
     else
       move_is_out_of_border? || move_is_ally_blocked?
     end
