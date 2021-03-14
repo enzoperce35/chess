@@ -7,7 +7,7 @@ require_relative 'display.rb'
 # controls the application
 class Chess
   attr_accessor :chess_players, :chess_board, :turn_count,
-                :turn_piece, :turn_move, :side_message, :player_move
+                :turn_piece, :turn_move, :side_message, :player_move, :pieces
 
   include Helper
 
@@ -43,7 +43,7 @@ class Chess
     convert_to_piece_position(adjacent_piece)
   end
 
-  def apply_changes_to_opposing_player(pieces)
+  def apply_changes_to_opposing_player
     pieces.delete_if do |_key, val|
       if player_move.is_en_passant?
         val['position'] == adjacent_opponent_piece
@@ -53,17 +53,31 @@ class Chess
     end
   end
 
-  def apply_change_to_rook1_of_turn_player(pieces)
-    return nil if turn_piece == 'h1'
+  def apply_rook_changes_with(rook_position, rook_destination)
+    @turn_piece = rook_position
 
-    @turn_piece = 'h1'
+    @turn_move = rook_destination
 
-    @turn_move = 'f1'
-
-    apply_changes_to_turn_player(pieces)
+    apply_changes_to_turn_player
   end
 
-  def apply_changes_to_turn_player(pieces)
+  def right_castling?
+    turn_move == 'g1'
+  end
+
+  def left_castling?
+    turn_move == 'c1'
+  end
+
+  def apply_castling
+    if left_castling?
+      apply_rook_changes_with('a1', 'd1')
+    elsif right_castling?
+      apply_rook_changes_with('h1', 'f1')
+    end
+  end
+
+  def apply_changes_to_turn_player
     pieces.map do |_key, val|
       val.delete_if { |k, v| k == 'latest_move' }
 
@@ -75,18 +89,18 @@ class Chess
 
       val['latest_move'] = true
     end
-    apply_change_to_rook1_of_turn_player(pieces) if player_move.is_castling?
+    apply_castling if player_move.is_castling?
   end
 
   # modifies chess player pieces in accordance with the chess move made
   def apply_chess_move
     chess_players.each do |player|
-      pieces = player['active_pieces']
+      @pieces = player['active_pieces']
 
       if player == turn_player
-        apply_changes_to_turn_player(pieces)
+        apply_changes_to_turn_player
       else
-        apply_changes_to_opposing_player(pieces)
+        apply_changes_to_opposing_player
       end
     end
   end
@@ -170,6 +184,8 @@ def piece_moves_tester
 
 
   piece_moves_check_set
+  #place_piece('bishop', 'g1', turn_player)
+  #place_piece('bishop', 'c1', turn_player)
 
 end
 
@@ -187,7 +203,7 @@ def piece_moves_check_set
   place_piece('pawn', 'f7', opposing_player)
   place_piece('pawn', 'b7', opposing_player)
   place_piece('pawn', 'a7', opposing_player)
-  place_piece('rook', 'b5', opposing_player)
+  place_piece('rook', 'b5', opposing_player, 1)
   place_piece('rook', 'a8', opposing_player)
   place_piece('bishop', 'h7', opposing_player)
   place_piece('king', 'd8', opposing_player)
@@ -241,7 +257,7 @@ def add_suffix(name, player)
 end
 
 #creates a name, image, position values to each or either of the 'turn' or 'opposing' player's 'active_pieces'
-def place_piece(piece, index, player)
+def place_piece(piece, index, player, moves = 0)
   piece_name = add_suffix(piece, player)
 
   index = alter_position_of(index)
@@ -250,7 +266,7 @@ def place_piece(piece, index, player)
 
   image = put_colour_to(image, 'black') if player['piece_color'] == 'black'
 
-  player['active_pieces'].store(piece_name, {"name"=>"#{piece}", "image"=>image, "position"=>"#{index}", "moves"=>0})
+  player['active_pieces'].store(piece_name, {"name"=>"#{piece}", "image"=>image, "position"=>"#{index}", "moves"=>moves})
 end
 
 #returns the piece image
