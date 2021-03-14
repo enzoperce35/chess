@@ -31,7 +31,9 @@ class PossibleMoves
   end
 
   def castling_message
-    '(castling: with rook h2)'
+    rook = new_move == 'c1' ? 'rook a1' : 'rook h1'
+
+    "(castling: with #{rook})"
   end
 
   def capture_message
@@ -89,19 +91,19 @@ class PossibleMoves
     2.times { |i| operate_en_passant(intercardinal_directions[i]) }
   end
 
-  def operate_castling
+  def operate_castling(direction)
     @move = Castling.new(piece, current_square, chess_board, player_pieces,
-                         opponent_pieces, nil, false, moves)
+                         opponent_pieces, direction, false, moves)
 
-    castling = move.king_behind_rook
+    castling = move.king_behind_rook(direction)
 
-    count_as_a_possible(castling) unless move.of_castling_is_impossible?
+    count_as_a_possible(castling) unless move.castling_is_impossible?
   end
 
   def generate_king_moves
     traverse(all_directions, false)
 
-    operate_castling
+    2.times { |i| operate_castling(i.zero? ? 'left' : 'right') }
   end
 
   def move_chess_piece(square = current_square)

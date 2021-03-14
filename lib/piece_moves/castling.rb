@@ -2,16 +2,21 @@ require './lib/move.rb'
 
 class Castling < Move
 
-  def king_behind_rook
+  def king_behind_rook(direction)
     row_index, column_index = current_square
 
-    @new_square = [row_index + 2, column_index]
+    @new_square =
+    if direction == 'left'
+      [row_index - 2, column_index]
+    else
+      [row_index + 2, column_index]
+    end
 
     new_square
   end
 
-  def squares_between_are_not_empty?
-    squares_between = chess_board['f1'], chess_board['g1']
+  def unempty?(squares)
+    squares_between = Array.new(squares.length) { |i| chess_board[squares[i]] }
 
     squares_between.each do |square|
       square = square.dig('square')
@@ -22,27 +27,38 @@ class Castling < Move
     false
   end
 
-  def rook_is_moved?
-    move_count = player_pieces['rook2'].dig('moves')
-
-    !move_count.zero?
+  def show_squares_between
+    case direction
+    when 'left'
+      ['b1', 'c1', 'd1']
+    when 'right'
+      ['f1', 'g1']
+    end
   end
 
-  def king_is_moved?
-    move_count = player_pieces['king1'].dig('moves')
+  def moved?(castling_pieces)
+    castling_pieces.each do |piece|
+      move_count = player_pieces[piece]['moves']
 
-    !move_count.zero?
+      return true if !move_count.zero?
+    end
+
+    false
   end
 
-  def castling_pieces_are_moved?
-    king_is_moved? || rook_is_moved?
+  def unavailable?(castling_rook)
+    player_pieces[castling_rook].nil?
   end
 
-  def castling_rook_is_not_available?
-    player_pieces['rook2'].nil?
+  def king_castling_is_impossible_with?(castling_rook)
+    squares_between = show_squares_between
+
+    *castling_pieces = 'king1', castling_rook
+
+    unavailable?(castling_rook) || moved?(castling_pieces) || unempty?(squares_between)
   end
 
-  def of_castling_is_impossible?
-    castling_rook_is_not_available? || castling_pieces_are_moved? || squares_between_are_not_empty?
+  def castling_is_impossible?
+    king_castling_is_impossible_with?(direction == 'left' ? 'rook1' : 'rook2')
   end
 end
