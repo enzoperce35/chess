@@ -27,6 +27,6 @@ class Player
 
     piece_set = assign_piece_set
 
-    { 'name' => player_name, 'piece_color' => piece_color, 'active_pieces' => piece_set }
+    { 'name' => player_name, 'piece_color' => piece_color, 'turns' => 0, 'active_pieces' => piece_set }
   end
 end
