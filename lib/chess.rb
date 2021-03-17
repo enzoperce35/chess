@@ -1,12 +1,8 @@
 require_relative './modules/helper.rb'
-require_relative 'side_message.rb'
-require_relative 'chess_board.rb'
+require_relative './display/display.rb'
 require_relative 'player_move.rb'
-require_relative 'display.rb'
+require_relative 'turn_players.rb'
 
-require_relative 'turn.rb'
-
-# controls the application
 class Chess
   attr_accessor :chess_players, :chess_board, :turn_count, :turn,
                 :turn_piece, :turn_move, :side_message, :player_move, :pieces
@@ -16,7 +12,6 @@ class Chess
   def initialize(chess_players)
     @chess_players = chess_players
     @game_over = false
-    @turn = Turn.new(chess_players)
   end
 
   def next_turn
@@ -118,32 +113,12 @@ class Chess
     no_possible_move? ? redo_chess_move : apply_chess_move
   end
 
-  # alters each chess pieces' board position coordinates
-  def alter_pieces_positions
-    chess_players.each do |player|
-      player['active_pieces'].values.map do |piece|
-        piece_position = piece['position']
-
-        coordinates = convert_to_board_coordinates(piece_position)
-
-        coordinates = alter_board(*coordinates)
-
-        piece_position = convert_to_piece_position(coordinates)
-
-        piece['position'] = piece_position
-      end
-    end
-  end
 
   # displays the virtual chess board with game information on the side
   def display_chess_board_with_side_message
-    @chess_players = alter_pieces_positions
+    display = Display.new(chess_players)
 
-    @chess_board = ChessBoard.new(chess_players).put_chess_pieces
-
-    @side_message = SideMessage.new(turn.player).create_side_message
-
-    Display.new(chess_board, side_message).attach_and_display
+    display.chess_board_with_side_message
   end
 
   def is_over?
