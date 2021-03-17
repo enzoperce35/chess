@@ -4,35 +4,23 @@ require_relative 'chess_board.rb'
 require_relative 'player_move.rb'
 require_relative 'display.rb'
 
+require_relative 'turn.rb'
+
 # controls the application
 class Chess
-  attr_accessor :chess_players, :chess_board, :turn_count,
+  attr_accessor :chess_players, :chess_board, :turn_count, :turn,
                 :turn_piece, :turn_move, :side_message, :player_move, :pieces
 
   include Helper
 
   def initialize(chess_players)
     @chess_players = chess_players
-    @turn_count = 1
     @game_over = false
-    piece_moves_tester
+    @turn = Turn.new(chess_players)
   end
 
-  def turn_player
-    player1, player2 = @chess_players
-
-    turn_count.odd? ? player1 : player2
-  end
-
-  def opposing_player
-    player1, player2 = @chess_players
-
-    turn_count.odd? ? player2 : player1
-  end
-
-  # increments @turn_count, thus switching the players
   def next_turn
-    @turn_count += 1
+    @turn = Turn.new(chess_players)
   end
 
   def adjacent_opponent_piece
@@ -97,7 +85,8 @@ class Chess
     chess_players.each do |player|
       @pieces = player['active_pieces']
 
-      if player == turn_player
+      if player == turn.player
+        player['turns'] += 1
         apply_changes_to_turn_player
       else
         apply_changes_to_opposing_player
@@ -120,7 +109,7 @@ class Chess
   end
 
   def make_a_chess_move
-    @player_move = PlayerMove.new(chess_board, turn_player, opposing_player)
+    @player_move = PlayerMove.new(chess_board, turn.player, turn.opposing_player)
 
     @turn_piece = player_move.choose_a_piece
 
@@ -152,7 +141,7 @@ class Chess
 
     @chess_board = ChessBoard.new(chess_players).put_chess_pieces
 
-    @side_message = SideMessage.new(turn_player).create_side_message
+    @side_message = SideMessage.new(turn.player).create_side_message
 
     Display.new(chess_board, side_message).attach_and_display
   end
