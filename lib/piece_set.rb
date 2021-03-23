@@ -12,7 +12,6 @@ class PieceSet
     @piece_set = {}
   end
 
- # store key and modified value pairs to '@piece_set'
   def keep(piece_name, piece_image, x_coordinate, y_coordinate)
     value = { 'name' => remove_suffix_to(piece_name),
               'image' => piece_image,
@@ -23,7 +22,6 @@ class PieceSet
     @piece_set.store(piece_name, value)
   end
 
-  # alter the y_coordinate if '@piece_color' is white
   def alter_white_piece(y_coord)
     y_coord_for_white_piece = (9 - y_coord.to_i).to_s
 
@@ -55,7 +53,6 @@ class PieceSet
     end
   end
 
-  # modify each fraction of the line from the csv file
   def modify_piece(name, image, y_coord, x_coord)
     [piece_name = add_suffix_to(name),
 
@@ -66,7 +63,6 @@ class PieceSet
      x_coordinate = x_coord.chomp!]
   end
 
-  # returns a hash of chess_pieces with it's modified values
   def create_piece_set
     lines = File.readlines('chess_pieces.csv')
 

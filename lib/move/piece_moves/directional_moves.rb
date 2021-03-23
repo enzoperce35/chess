@@ -1,3 +1,4 @@
+# creates a chess move using basic directions
 class DirectionalMoves
   attr_accessor :direction
 
@@ -5,7 +6,8 @@ class DirectionalMoves
     @direction = direction
   end
 
-  def piece_from_this(row_index, column_index)
+  # modifies and returns a new move
+  def piece_from(row_index, column_index)
     case direction
     when 'up'
       [row_index, column_index + 1]

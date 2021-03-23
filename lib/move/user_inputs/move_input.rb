@@ -1,6 +1,7 @@
 require '/home/edgar/chess/lib/modules/user_prompt.rb'
 require '/home/edgar/chess/lib/modules/helper.rb'
 
+# sets the square position the selected piece will move to
 class MoveInput
   attr_accessor :chess_board, :piece_moves, :piece_name, :piece_position,
                 :new_square, :valid_squares
@@ -40,7 +41,7 @@ class MoveInput
 
     square = gets.chomp! until valid_squares.include?(square)
 
-    @board_square = square
+    @new_square = square
 
     new_square
   end

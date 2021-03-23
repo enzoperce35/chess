@@ -1,6 +1,7 @@
 require '/home/edgar/chess/lib/modules/move_directions.rb'
 require_relative 'move_collector.rb'
 
+# analyzes the move made
 class MoveAnalyzer < MoveCollector
   attr_accessor :direction, :multitude, :new_square
 

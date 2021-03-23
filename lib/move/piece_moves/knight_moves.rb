@@ -1,3 +1,4 @@
+# creates the chess knight moves
 class KnightMoves
   attr_accessor :current_square
 
@@ -5,6 +6,7 @@ class KnightMoves
     @current_square = current_square
   end
 
+  # returns all the squares the knight can move to
   def knight_in_all_directions
     row_index, column_index = current_square
 

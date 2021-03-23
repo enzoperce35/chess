@@ -1,5 +1,6 @@
 require '/home/edgar/chess/lib/modules/helper.rb'
 
+# creates the special chess move en passant
 class EnPassant
   attr_reader :direction, :row_index, :column_index, :prev_move, :opponent_pieces
 
@@ -10,6 +11,7 @@ class EnPassant
     @opponent_pieces = opponent_pieces
   end
 
+  # gets the piece adjacent to the turn player pawn
   def adjacent_piece
     prev_move['position']
   end
@@ -23,10 +25,12 @@ class EnPassant
     end
   end
 
+  # returns true if opponents last pawn move is a two square move
   def is_opponent_pawn_first_move?
     prev_move['moves'] == 1
   end
 
+  # returns false if opponent hasn't made move or move was not pawn
   def opponent_last_move_is_not_a_pawn?
     prev_move.nil? || prev_move['name'] != 'pawn'
   end
@@ -40,6 +44,7 @@ class EnPassant
     nil
   end
 
+  # prevents making en passant when special conditions are not met
   def is_en_passant_possible?
     @prev_move = show_opponent_last_move
 
@@ -50,7 +55,8 @@ class EnPassant
     player_pawn_is_adjacent_to?(opponent_pawn) && is_opponent_pawn_first_move?
   end
 
-  def pawn_from_this(current_square)
+  # returns a modified pawn en_passant move
+  def pawn_from(current_square)
     @row_index, @column_index = current_square
 
     case direction
@@ -60,5 +66,4 @@ class EnPassant
       [row_index + 1, column_index + 1]
     end
   end
-
 end

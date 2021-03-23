@@ -1,5 +1,6 @@
-require '/home/edgar/chess/lib/turn_piece.rb'
+require '/home/edgar/chess/lib/turn/turn_piece.rb'
 
+# compiles the chess moves made
 class MoveCollector < TurnPiece
   attr_reader :move, :new_move, :piece_moves
 

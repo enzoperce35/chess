@@ -9,7 +9,7 @@ class Game
 
     game = Chess.new(chess_players)
 
-    game.play until game.is_over?
+    game.make_turn until game.is_over?
   end
 end
 

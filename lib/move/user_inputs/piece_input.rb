@@ -1,6 +1,7 @@
 require '/home/edgar/chess/lib/modules/user_prompt.rb'
 require '/home/edgar/chess/lib/modules/helper.rb'
 
+# sets the chess piece that will move
 class PieceInput
   attr_accessor :player_pieces, :player_name
 

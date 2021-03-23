@@ -4,6 +4,7 @@ require_relative './piece_moves/en_passant.rb'
 require_relative './piece_moves/castling.rb'
 require_relative 'move_analyzer.rb'
 
+# makes the chess move
 class MoveMaker < MoveAnalyzer
 
   def generate_knight_moves
@@ -21,7 +22,7 @@ class MoveMaker < MoveAnalyzer
   def operate_en_passant(direction)
     @move = EnPassant.new(direction, opponent_pieces)
 
-    en_passant = move.pawn_from_this(current_square)
+    en_passant = move.pawn_from(current_square)
 
     collect(en_passant) if move.is_en_passant_possible?
   end
@@ -47,7 +48,7 @@ class MoveMaker < MoveAnalyzer
   end
 
   def move_chess_piece(square = current_square)
-    @new_square = move.piece_from_this(*square)
+    @new_square = move.piece_from(*square)
 
     move_invalid? ? nil : collect(new_square)
 
@@ -68,9 +69,8 @@ class MoveMaker < MoveAnalyzer
     traverse(directions, multiple_times)
   end
 
+  # returns an array of piece moves for the piece
   def make_piece_moves
-    @piece_moves = []
-
     case piece_name
     when 'queen'
       traverse(all_directions)
