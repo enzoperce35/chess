@@ -1,8 +1,8 @@
 require '/home/edgar/chess/lib/modules/move_directions.rb'
-require_relative 'move_collector.rb'
+require '/home/edgar/chess/lib/turn/turn_piece.rb'
 
 # analyzes the move made
-class MoveAnalyzer < MoveCollector
+class MoveAnalyzer < TurnPiece
   attr_accessor :direction, :multitude, :new_square
 
   include MoveDirections

@@ -22,10 +22,10 @@ class PieceSet
     @piece_set.store(piece_name, value)
   end
 
-  def alter_white_piece(y_coord)
-    y_coord_for_white_piece = (9 - y_coord.to_i).to_s
+  def alter_black_piece(y_coord)
+    y_coord_for_black_piece = (9 - y_coord.to_i).to_s
 
-    piece_color == 'white' ? y_coord_for_white_piece : y_coord
+    piece_color == 'black' ? y_coord_for_black_piece : y_coord
   end
 
   # modifies a unicode formatted 'piece_image'; colorize if '@piece_color' is black
@@ -58,7 +58,7 @@ class PieceSet
 
      piece_image = encode_unicode(image),
 
-     y_coordinate = alter_white_piece(y_coord),
+     y_coordinate = alter_black_piece(y_coord),
 
      x_coordinate = x_coord.chomp!]
   end

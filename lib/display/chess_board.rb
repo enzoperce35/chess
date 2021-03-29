@@ -6,8 +6,6 @@ class ChessBoard < TurnPlayers
     @chess_players = chess_players
   end
 
-  include Helper
-
   def with_same?(row_index, col_index)
     row_index.even? && col_index.even? || row_index.odd? && col_index.odd?
   end
@@ -37,29 +35,12 @@ class ChessBoard < TurnPlayers
     color(chess_board)
   end
 
-  # returns an array containing x and y coordinates
   def create_board_coordinates(sqr_ind)
     quotient, remainder = sqr_ind.divmod(8)
 
     [row_index = customize_row_index(remainder),
 
      col_index = 8 - quotient]
-  end
-
-  def alter_pieces_positions
-    chess_players.each do |player|
-      player['active_pieces'].values.map do |piece|
-        piece_position = piece['position']
-
-        coordinates = convert_to_board_coordinates(piece_position)
-
-        coordinates = alter_board(*coordinates)
-
-        piece_position = convert_to_piece_position(coordinates)
-
-        piece['position'] = piece_position
-      end
-    end
   end
 
   # returns a key-value hash pairs of chess board squares
@@ -78,7 +59,7 @@ class ChessBoard < TurnPlayers
   def put_chess_pieces
     chess_board = build_chess_board
 
-    @chess_players = alter_pieces_positions
+    #@chess_players = switch_board_view_for(chess_players)
 
     put_chess_pieces_into(chess_board)
   end

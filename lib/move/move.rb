@@ -1,6 +1,6 @@
+require '/home/edgar/chess/lib/user_inputs/piece_input.rb'
+require '/home/edgar/chess/lib/user_inputs/move_input.rb'
 require_relative 'move_maker.rb'
-require_relative './user_inputs/piece_input.rb'
-require_relative './user_inputs/move_input.rb'
 
 # returns the chess move
 class Move < MoveMaker

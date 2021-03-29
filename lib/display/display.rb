@@ -17,7 +17,12 @@ class Display
   # adds space padding to the top and bottom of the chess board
   def add_spacings
     2.times do |i|
-      @chess_board = i.zero? ? add_top_spacing(chess_board, 2) : add_bottom_spacing(chess_board, 2)
+      @chess_board =
+        if i.zero?
+          add_top_spacing(chess_board, 2)
+        else
+          add_bottom_spacing(chess_board, 2)
+        end
     end
   end
 
@@ -61,7 +66,7 @@ class Display
   end
 
   # processes the chess board with the following method
-  def merge
+  def attach_and_display
     convert_to_string
 
     attach_side_message

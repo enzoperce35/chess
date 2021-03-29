@@ -4,19 +4,12 @@ require_relative 'turn_move.rb'
 class Turn < TurnMove
   attr_accessor :turn_piece
 
-  def initialize(move, chess_players, turn_piece = move.dig('piece'))
+  def initialize(move, chess_players, turn_piece = move['piece'])
     @move = move
     @chess_players = chess_players
-    @turn_move = move.dig('move')
-    @piece_color = turn_piece.dig('color')
-    @piece_position = turn_piece.dig('position')
-  end
-
-  # count this turn the return chess players' new state
-  def finalize_turn
-    turn_player['turns'] += 1
-
-    chess_players
+    @turn_move = move['move']
+    @piece_color = turn_piece['color']
+    @piece_position = turn_piece['position']
   end
 
   def move_rook_to_left_side_of(row_index, col_index)
@@ -81,11 +74,11 @@ class Turn < TurnMove
     end
   end
 
-  def apply_move
+  def apply_latest_move
     apply_changes_to_opposing_player
 
     apply_changes_to_turn_player
 
-    finalize_turn
+    chess_players
   end
 end

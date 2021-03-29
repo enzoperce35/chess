@@ -1,7 +1,7 @@
-require '/home/edgar/chess/lib/turn/turn_piece.rb'
+require_relative 'move_analyzer.rb'
 
 # compiles the chess moves made
-class MoveCollector < TurnPiece
+class MoveCollector < MoveAnalyzer
   attr_reader :move, :new_move, :piece_moves
 
   def en_passant_message

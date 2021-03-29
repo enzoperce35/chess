@@ -27,6 +27,10 @@ class TurnPlayers
     player_turns_are_equal? ? player_1 : player_2
   end
 
+  def player_king
+    player_pieces['king1']
+  end
+
   def player_pieces
     turn_player['active_pieces']
   end
@@ -41,5 +45,9 @@ class TurnPlayers
 
   def opponent_pieces
     opposing_player['active_pieces']
+  end
+
+  def current_pieces_position
+    Marshal.load(Marshal.dump(chess_players))
   end
 end

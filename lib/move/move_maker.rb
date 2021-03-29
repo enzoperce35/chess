@@ -2,10 +2,10 @@ require_relative './piece_moves/knight_moves.rb'
 require_relative './piece_moves/directional_moves.rb'
 require_relative './piece_moves/en_passant.rb'
 require_relative './piece_moves/castling.rb'
-require_relative 'move_analyzer.rb'
+require_relative 'move_collector.rb'
 
 # makes the chess move
-class MoveMaker < MoveAnalyzer
+class MoveMaker < MoveCollector
 
   def generate_knight_moves
     @move = KnightMoves.new(current_square)
