@@ -22,7 +22,7 @@ class Player
   end
 
   def set_player
-    player_name = 'prompt_name'
+    player_name = prompt_name
 
     piece_set = assign_piece_set
 
